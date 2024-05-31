@@ -1,27 +1,18 @@
-﻿cmake_minimum_required (VERSION 3.15)
+cmake_minimum_required(VERSION 3.10)
+project(Chess)
 
-project (Chess)
+set(CMAKE_CXX_STANDARD 17)
 
-# New CMake versions map C++20 to /std:c++20 instead of c++latest, so <format>
-# and other unstable ABI features aren't supported. Use C++23 for such versions
-if (MSVC AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.21)
-    set(CMAKE_CXX_STANDARD 23)
-else ()
-    set(CMAKE_CXX_STANDARD 20)
-endif ()
+# Include the directory containing the header files
+include_directories(include include/pieces)
 
-set (CMAKE_CXX_STANDARD_REQUIRED ON)
-set (CMAKE_CXX_EXTENSIONS OFF)
+# Add the source files
+set(SOURCES
+    src/main.cpp
+    src/Pieces/Rook.cpp
+    src/Pieces/MovementStrats.cpp
+    src/Pieces/Piece.cpp
+    src/Chess.cpp
+)
 
-if (MSVC)
-    add_compile_options (/W4 /permissive- /Zc:externConstexpr /Zc:inline)
-endif ()
-
-add_executable (Chess "")
-
-
-add_subdirectory (include)
-add_subdirectory (src)
-
-
-
+add_executable(Chess ${SOURCES} "src/Board.cpp" "include/Board.h")
