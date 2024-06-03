@@ -24,7 +24,3 @@ bool Piece::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
     return false;
 }
 
-inline char Piece::getSymbol() const
-{
-    return symbol;
-}

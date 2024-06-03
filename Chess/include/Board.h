@@ -18,6 +18,8 @@ public:
     Piece* getPiece(int row, int col) const;
     bool movePiece(int srcRow, int srcCol, int destRow, int destCol);
 
+    static bool isWithinBounds(int row, int col);
+
 };
 
 #endif // BOARD_H

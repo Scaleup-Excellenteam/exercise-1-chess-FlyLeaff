@@ -17,6 +17,6 @@ public:
 
     bool isValidMove(int srcRow, int srcCol, int destRow, int destCol) const;
 
-    inline char getSymbol() const;
+    inline char getSymbol() const { return symbol; }
     virtual ~Piece() = default;
 };

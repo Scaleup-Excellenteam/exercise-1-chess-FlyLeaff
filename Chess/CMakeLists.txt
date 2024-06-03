@@ -15,4 +15,4 @@ set(SOURCES
     src/Chess.cpp
 )
 
-add_executable(Chess ${SOURCES} "src/Board.cpp" "include/Board.h")
+add_executable(Chess ${SOURCES} "src/Board.cpp" "include/Board.h" "include/Game.h" "src/Game.cpp"  "include/ChessNotionParser.h")

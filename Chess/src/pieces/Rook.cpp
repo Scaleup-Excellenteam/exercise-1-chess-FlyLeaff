@@ -9,5 +9,8 @@ Rook::Rook() : Piece('R','w')
 
 Rook::Rook(char color)
 {
+
+	movementStrategies.push_back(std::make_unique<HorizontalVerticalMovement>());
 	symbol = color == 'w' ? 'R' : 'r';
+	this->color = color;
 }
