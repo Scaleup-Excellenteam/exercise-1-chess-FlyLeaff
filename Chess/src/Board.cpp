@@ -1,5 +1,6 @@
 #include "Board.h"
-#include "Pieces/Rook.h"
+#include "Rook.h"
+#include "King.h"
 #include <stdexcept>
 #include <iostream>
 // Include other piece headers as needed
@@ -26,16 +27,23 @@ void Board::initializeBoard(const std::string& boardString)
             char pieceChar = boardString[row * 8 + col];
             switch (pieceChar)
             {
-            case 'R':
-                board[row][col] = std::make_unique<Rook>('w');
-                break;
-            case 'r':
-                board[row][col] = std::make_unique<Rook>('b');
-                break;
-                // TODO Add cases for other pieces
             case '#':
                 board[row][col] = nullptr;
                 break;
+            case 'R':
+                board[row][col] = std::make_unique<Rook>(Board::white);
+                break;
+            case 'r':
+                board[row][col] = std::make_unique<Rook>(Board::black);
+                break;
+            case 'K':
+                board[row][col] = std::make_unique<King>(Board::white);
+                break;
+            case 'k':
+                board[row][col] = std::make_unique<King>(Board::black);
+                break;
+                // TODO Add cases for other pieces
+
             default:
                 board[row][col] = nullptr;
                 break;
@@ -63,6 +71,14 @@ Piece* Board::getPiece(int row, int col) const
     return board[row][col].get();
 
 }
+bool Board::setPiece(int row, int col, std::unique_ptr<Piece> piece)
+{
+	if (!isWithinBounds(row, col))
+		return false;
+	board[row][col] = std::move(piece);
+    return true;
+}
+
 bool Board::movePiece(int srcRow, int srcCol, int destRow, int destCol)
 {
 
@@ -81,7 +97,60 @@ bool Board::movePiece(int srcRow, int srcCol, int destRow, int destCol)
     return true;
 }
 
+bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
+{
+    if (!isWithinBounds(srcRow, srcCol) || !isWithinBounds(destRow, destCol))
+        return false;
+
+    Piece* srcPiece = getPiece(srcRow, srcCol);
+    if (!srcPiece)
+        return false;
+
+    auto validMoves = srcPiece->getValidMoves(srcRow, srcCol);
+    for (const auto& move : validMoves)
+    {
+        if (move.first == destRow && move.second == destCol)
+        {
+            // Check for path blocking for sliding pieces: Rook, Bishop, and Queen
+            if (dynamic_cast<Rook*>(srcPiece) ) //|| dynamic_cast<Bishop*>(srcPiece) || dynamic_cast<Queen*>(srcPiece)
+            {
+                int rowStep = (destRow - srcRow) ? (destRow - srcRow) / abs(destRow - srcRow) : 0;
+                int colStep = (destCol - srcCol) ? (destCol - srcCol) / abs(destCol - srcCol) : 0;
+                for (int r = srcRow + rowStep, c = srcCol + colStep; r != destRow || c != destCol; r += rowStep, c += colStep)  //Bug check this
+                {
+                    if (board[r][c])
+                        return false;
+                }
+            }
+
+            Piece* destPiece = getPiece(destRow, destCol);
+            if (destPiece)
+            {
+                bool isSrcWhite = (srcPiece->getSymbol() >= 'A' && srcPiece->getSymbol() <= 'Z');
+                bool isDestWhite = (destPiece->getSymbol() >= 'A' && destPiece->getSymbol() <= 'Z');
+                if (isSrcWhite == isDestWhite)
+                    return false;
+            }
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 bool Board::isWithinBounds(int row, int col) 
 {
     return row >= 0 && row < 8 && col >= 0 && col < 8;
+}
+std::vector<std::unique_ptr<Piece>>& Board::operator[](int row)
+{
+    return board[row];
+}
+
+// Overload the subscript operator for const access
+const std::vector<std::unique_ptr<Piece>>& Board::operator[](int row) const
+{
+    return board[row];
 }

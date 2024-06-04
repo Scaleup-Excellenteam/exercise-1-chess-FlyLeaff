@@ -6,7 +6,7 @@
 int main()
 {
     //string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
-    std::string board = "R######R################################################r######r";
+    std::string board = "##k##K#R####r###########################################r######r";
 
     Chess a(board);
     Game game;
@@ -45,16 +45,30 @@ int main()
             int srcRow = srcPos.second;
             int destCol = destPos.first;
             int destRow = destPos.second;
-            game.isLegalMove(srcRow, srcCol, destRow, destCol);
-            codeResponse = LegalMoveException().getErrorCode(); // Move is legal and does not cause check
-            game.movePiece(srcRow, srcCol, destRow, destCol);
+            if(game.isLegalMove(srcRow, srcCol, destRow, destCol))
+            {
+                char ch = game.getCurrentPlayerColor();
+                codeResponse = LegalMoveException().getErrorCode(); // Move is legal and does not cause check
+
+                game.movePiece(srcRow, srcCol, destRow, destCol);
+                if (game.isCheck(ch))
+                    codeResponse = MoveChecksOpponentException().getErrorCode(); // Move is legal and causes check
+            }
+			else
+			{
+				codeResponse = IllegalMoveException().getErrorCode(); // Move is illegal
+			}
+           
+
         }
-        catch (const ChessException& e) {
+        catch (const ChessException& e) 
+        {
 			std::cout << "Error: " << e.what() << std::endl;
 			codeResponse = e.getErrorCode();
 		}
 
-        catch (const std::exception& e) {
+        catch (const std::exception& e) 
+        {
             std::cout << "An unexpected error occurred: " << e.what() << std::endl;
             codeResponse = 0;
         }

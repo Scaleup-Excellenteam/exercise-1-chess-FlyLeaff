@@ -9,8 +9,11 @@
 class Game
 {
 private:
+
     Board board;
     bool whiteTurn;
+    std::pair<int, int> whiteKingPos;
+    std::pair<int, int> blackKingPos;
 
 public:
     Game();
@@ -19,10 +22,13 @@ public:
     bool movePiece(int srcRow, int srcCol, int destRow, int destCol);
     bool isWhiteTurn() const { return whiteTurn; }
     bool isGameOver() const;
-    bool isLegalMove(int srcRow, int srcCol, int destRow, int destCol);
+    bool isLegalMove(int srcRow, int srcCol, int destRow, int destCol) const;
+    bool doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destCol) const;
 
-    bool isWhitePiece(char pieceSymbol);
+    bool isCheck(char color) const;
 
+    bool isWhitePiece(char pieceSymbol) const;
+    char getCurrentPlayerColor() const;
 
     // Static function to parse chess notation
     static std::pair<std::pair<int, int>, std::pair<int, int>> parseMove(const std::string& move);

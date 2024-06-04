@@ -3,13 +3,24 @@
 std::vector<std::pair<int, int>> HorizontalVerticalMovement::getValidMoves(int srcRow, int srcCol) const
 {
     std::vector<std::pair<int, int>> moves;
-    for (int i = 0; i < 8; ++i)
+
+    // Horizontal moves
+    for (int col = 0; col < 8; ++col)
     {
-        if (i != srcRow) moves.emplace_back(i, srcCol);
-        if (i != srcCol) moves.emplace_back(srcRow, i);
+        if (col != srcCol)  // Exclude the source column
+            moves.emplace_back(srcRow, col);
     }
+
+    // Vertical moves
+    for (int row = 0; row < 8; ++row)
+    {
+        if (row != srcRow)  // Exclude the source row
+            moves.emplace_back(row, srcCol);
+    }
+
     return moves;
 }
+
 
 std::vector<std::pair<int, int>> DiagonalMovement::getValidMoves(int srcRow, int srcCol) const
 {

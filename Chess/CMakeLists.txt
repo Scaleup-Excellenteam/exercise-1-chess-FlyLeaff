@@ -4,15 +4,19 @@ project(Chess)
 set(CMAKE_CXX_STANDARD 17)
 
 # Include the directory containing the header files
-include_directories(include include/pieces)
-
+include_directories(include)
+include_directories(include/pieces)
 # Add the source files
 set(SOURCES
-    src/main.cpp
-    src/Pieces/Rook.cpp
-    src/Pieces/MovementStrats.cpp
-    src/Pieces/Piece.cpp
     src/Chess.cpp
+    src/main.cpp
+    src/Board.cpp
+    src/Game.cpp
+    src/pieces/Piece.cpp
+    src/Pieces/Rook.cpp
+    src/Pieces/King.cpp
+    src/MovementStrats.cpp
 )
 
-add_executable(Chess ${SOURCES} "src/Board.cpp" "include/Board.h" "include/Game.h" "src/Game.cpp"  "include/ChessNotionParser.h")
+# Add the executable
+add_executable(Chess ${SOURCES})

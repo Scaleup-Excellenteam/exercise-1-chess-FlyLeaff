@@ -35,9 +35,9 @@ public:
     IllegalMoveException() : ChessException(21, "Move is not legal for this piece") {}
 };
 
-class MoveCausesCheckException : public ChessException {
+class MoveCausesSelfCheckException : public ChessException {
 public:
-    MoveCausesCheckException() : ChessException(31, "Move causes check to the player making the move") {}
+    MoveCausesSelfCheckException() : ChessException(31, "Move causes check to the player making the move") {}
 };
 
 class OutOfBoundsException : public ChessException 
@@ -47,9 +47,9 @@ public:
 };
 
 
-class MoveCausesOpponentCheckException : public ChessException {
+class MoveChecksOpponentException : public ChessException {
 public:
-    MoveCausesOpponentCheckException() : ChessException(41, "Move causes check to the opponent") {}
+    MoveChecksOpponentException() : ChessException(41, "Move causes check to the opponent") {}
 };
 
 class LegalMoveException : public ChessException {

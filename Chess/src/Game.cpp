@@ -18,26 +18,30 @@ bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
 {
     if (board.movePiece(srcRow, srcCol, destRow, destCol))
     {
+        if (board[srcRow][srcCol]->getSymbol() == 'K')
+        {   // keep track of kings position for check checks
+            whiteKingPos.first = destRow;
+            whiteKingPos.second = destCol;
+        }
+        if (board[srcRow][srcCol]->getSymbol() == 'k')
+        {
+            blackKingPos.first = destRow;
+            blackKingPos.second = destCol;			
+		}
         switchTurn();
         return true;
     }
     return false;
 }
 
-bool Game::isGameOver() const
-{
-    // Add logic to determine if the game is over
-    return false;
-}
-
-bool Game::isLegalMove(int srcRow, int srcCol, int destRow, int destCol)
+bool Game::isLegalMove(int srcRow, int srcCol, int destRow, int destCol) const
 {
     if (!Board::isWithinBounds(srcRow, srcCol) || !Board::isWithinBounds(destRow, destCol))
         throw OutOfBoundsException();
 	
 
     Piece* srcPiece = board.getPiece(srcRow, srcCol);
-    if (!srcPiece)   
+    if (!srcPiece)
         return false;
     
 
@@ -48,10 +52,11 @@ bool Game::isLegalMove(int srcRow, int srcCol, int destRow, int destCol)
         throw OpponentPieceAtSourceException();
     
 
-    if (!srcPiece->isValidMove(srcRow, srcCol, destRow, destCol))
+    if (!board.isValidMove(srcRow, srcCol, destRow, destCol))
         throw IllegalMoveException();
 
-
+    if (doesMoveCauseSelfCheck(srcRow, srcCol, destRow, destCol))
+        throw MoveCausesSelfCheckException();
 
     //TODO add self check move check
 
@@ -70,9 +75,63 @@ bool Game::isLegalMove(int srcRow, int srcCol, int destRow, int destCol)
     return true;
 }
 
-bool Game::isWhitePiece(char pieceSymbol)
+bool Game::doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destCol) const
+{
+    // Backup the current state of the board
+    auto& nonConstBoard = const_cast<Board&>(board);
+    std::unique_ptr<Piece> srcPiece = std::move(nonConstBoard[srcRow][srcCol]);
+    std::unique_ptr<Piece> destPiece = std::move(nonConstBoard[destRow][destCol]);
+
+    // Perform the move
+    nonConstBoard.movePiece(destRow, destCol, destRow,destCol);
+
+    // Check if the move causes check
+    bool causesCheck = isCheck(whiteTurn ? Board::white : Board::black);
+
+    // Revert the move
+    nonConstBoard.setPiece(srcRow, srcCol, std::move(nonConstBoard[srcRow][srcCol]));
+    nonConstBoard.setPiece(destRow,destCol, destPiece ? std::move(destPiece) : nullptr);
+
+    return causesCheck;
+}
+
+
+
+bool Game::isCheck(char color) const
+{
+    auto kingPos = (color == Board::white) ? whiteKingPos : blackKingPos;
+    char opponentColor = (color == Board::white) ? Board::black : Board::white;
+
+    for (int row = 0; row < 8; ++row)
+    {
+        for (int col = 0; col < 8; ++col)
+        {
+            Piece* piece = board.getPiece(row, col);
+            if (piece && (isWhitePiece(piece->getSymbol()) == (opponentColor == Board::white)))
+            {
+                if (board.isValidMove(row,col,kingPos.first,kingPos.second))                  
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+bool Game::isGameOver() const
+{
+    // Add logic to determine if the game is over
+    return false;
+}
+
+bool Game::isWhitePiece(char pieceSymbol) const
 {
     return pieceSymbol >= 'A' && pieceSymbol <= 'Z';
+}
+
+char Game::getCurrentPlayerColor() const
+{
+    return isWhiteTurn() ? Board::white : Board::black;
 }
 
 
