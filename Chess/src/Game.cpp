@@ -18,15 +18,13 @@ bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
 {
     if (board.movePiece(srcRow, srcCol, destRow, destCol))
     {
-        if (board[srcRow][srcCol]->getSymbol() == 'K')
+        if (board[destRow][destCol]->getSymbol() == 'K')
         {   // keep track of kings position for check checks
-            whiteKingPos.first = destRow;
-            whiteKingPos.second = destCol;
+            board.setWhiteKingPos(destRow, destCol);
         }
-        if (board[srcRow][srcCol]->getSymbol() == 'k')
+        if (board[destRow][destCol]->getSymbol() == 'k')
         {
-            blackKingPos.first = destRow;
-            blackKingPos.second = destCol;			
+            board.setBlackKingPos(destRow, destCol);
 		}
         switchTurn();
         return true;
@@ -74,47 +72,39 @@ bool Game::isLegalMove(int srcRow, int srcCol, int destRow, int destCol) const
 
     return true;
 }
-
 bool Game::doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destCol) const
 {
-    // Backup the current state of the board
-    auto& nonConstBoard = const_cast<Board&>(board);
-    std::unique_ptr<Piece> srcPiece = std::move(nonConstBoard[srcRow][srcCol]);
-    std::unique_ptr<Piece> destPiece = std::move(nonConstBoard[destRow][destCol]);
+   
 
-    // Perform the move
-    nonConstBoard.movePiece(destRow, destCol, destRow,destCol);
-
-    // Check if the move causes check
-    bool causesCheck = isCheck(whiteTurn ? Board::white : Board::black);
-
-    // Revert the move
-    nonConstBoard.setPiece(srcRow, srcCol, std::move(nonConstBoard[srcRow][srcCol]));
-    nonConstBoard.setPiece(destRow,destCol, destPiece ? std::move(destPiece) : nullptr);
-
-    return causesCheck;
+    return innerIsCheck(*board.simulateMove(srcRow, srcCol, destRow, destCol), board[srcRow][srcCol]->getColor());
 }
-
-
-
-bool Game::isCheck(char color) const
+bool Game::innerIsCheck(Board& tempBoard,char color) const
 {
-    auto kingPos = (color == Board::white) ? whiteKingPos : blackKingPos;
+    auto kingPos = (color == Board::white) ? tempBoard.getWhiteKingPos() : tempBoard.getBlackKingPos();
     char opponentColor = (color == Board::white) ? Board::black : Board::white;
 
     for (int row = 0; row < 8; ++row)
     {
         for (int col = 0; col < 8; ++col)
         {
-            Piece* piece = board.getPiece(row, col);
-            if (piece && (isWhitePiece(piece->getSymbol()) == (opponentColor == Board::white)))
+            Piece* piece = tempBoard.getPiece(row, col);
+            if (piece && (getCurrentPlayerColor() != piece->getColor()))
             {
-                if (board.isValidMove(row,col,kingPos.first,kingPos.second))                  
+                if (tempBoard.isValidMove(row, col, kingPos.first, kingPos.second))
                     return true;
             }
         }
     }
     return false;
+}
+
+
+
+
+
+bool Game::isCheck(char color) const
+{
+   return innerIsCheck(board, color);
 }
 
 

@@ -6,7 +6,7 @@
 int main()
 {
     //string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
-    std::string board = "##k##K#R####r###########################################r######r";
+    std::string board = "#####K#R####r###########################################r######r";
 
     Chess a(board);
     Game game;

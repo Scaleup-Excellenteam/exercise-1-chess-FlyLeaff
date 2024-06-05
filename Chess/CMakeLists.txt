@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(include)
 include_directories(include/pieces)
 # Add the source files
+
 set(SOURCES
     src/Chess.cpp
     src/main.cpp
@@ -18,5 +19,6 @@ set(SOURCES
     src/MovementStrats.cpp
 )
 
+    
 # Add the executable
 add_executable(Chess ${SOURCES})

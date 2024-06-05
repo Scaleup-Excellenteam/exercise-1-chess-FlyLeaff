@@ -21,6 +21,11 @@ std::vector<std::pair<int, int>> HorizontalVerticalMovement::getValidMoves(int s
     return moves;
 }
 
+std::unique_ptr<MovementStrategy> HorizontalVerticalMovement::clone() const
+{
+    return std::make_unique<HorizontalVerticalMovement>(*this);
+}
+
 
 std::vector<std::pair<int, int>> DiagonalMovement::getValidMoves(int srcRow, int srcCol) const
 {
@@ -33,6 +38,11 @@ std::vector<std::pair<int, int>> DiagonalMovement::getValidMoves(int srcRow, int
         if (srcRow - i >= 0 && srcCol - i >= 0) moves.emplace_back(srcRow - i, srcCol - i);
     }
     return moves;
+}
+
+std::unique_ptr<MovementStrategy> DiagonalMovement::clone() const
+{
+    return std::make_unique<DiagonalMovement>(*this);
 }
 
 std::vector<std::pair<int, int>> KingMovement::getValidMoves(int srcRow, int srcCol) const
@@ -48,6 +58,11 @@ std::vector<std::pair<int, int>> KingMovement::getValidMoves(int srcRow, int src
                     moves.emplace_back(newRow, newCol);
             }
     return moves;
+}
+
+std::unique_ptr<MovementStrategy> KingMovement::clone() const
+{
+    return std::make_unique<KingMovement>(*this);
 }
 
 std::vector<std::pair<int, int>> KnightMovement::getValidMoves(int srcRow, int srcCol) const
@@ -68,6 +83,11 @@ std::vector<std::pair<int, int>> KnightMovement::getValidMoves(int srcRow, int s
     return moves;
 }
 
+std::unique_ptr<MovementStrategy> KnightMovement::clone() const
+{
+    return std::make_unique<KnightMovement>(*this);
+}
+
 std::vector<std::pair<int, int>> PawnMovement::getValidMoves(int srcRow, int srcCol) const
 {
     std::vector<std::pair<int, int>> moves;
@@ -83,4 +103,9 @@ std::vector<std::pair<int, int>> PawnMovement::getValidMoves(int srcRow, int src
             moves.emplace_back(srcRow + direction, srcCol + 1); // Capture right
     }
     return moves;
+}
+
+std::unique_ptr<MovementStrategy> PawnMovement::clone() const
+{
+    return std::make_unique<PawnMovement>(*this);
 }

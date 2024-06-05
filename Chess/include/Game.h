@@ -10,10 +10,9 @@ class Game
 {
 private:
 
-    Board board;
+    mutable Board board;
     bool whiteTurn;
-    std::pair<int, int> whiteKingPos;
-    std::pair<int, int> blackKingPos;
+    bool innerIsCheck(Board& tempBoard, char color) const;
 
 public:
     Game();

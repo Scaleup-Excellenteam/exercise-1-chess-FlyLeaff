@@ -15,6 +15,27 @@ Board::Board()
     }
 }
 
+Board::Board(const Board& other) {
+    // Allocate new memory for the 2D vector of pieces
+    board = std::vector<std::vector<std::unique_ptr<Piece>>>(other.board.size());
+    for (int i = 0; i < other.board.size(); ++i) {
+        // Resize each inner vector and copy pieces using new pointers
+        board[i].resize(other.board[i].size());
+        for (int j = 0; j < other.board[i].size(); ++j) {
+            if (other.board[i][j]) {
+                // Deep copy the piece using the Piece's copy constructor (assumed to exist)
+                board[i][j] = std::make_unique<Piece>(*other.board[i][j]);
+            }
+            else {
+                board[i][j] = nullptr;
+            }
+        }
+    }
+    // Copy king positions
+    whiteKingPos = other.whiteKingPos;
+    blackKingPos = other.blackKingPos;
+}
+
 void Board::initializeBoard(const std::string& boardString)
 {
     if (boardString.size() != 64)
@@ -38,9 +59,11 @@ void Board::initializeBoard(const std::string& boardString)
                 break;
             case 'K':
                 board[row][col] = std::make_unique<King>(Board::white);
+                setWhiteKingPos(row, col);
                 break;
             case 'k':
                 board[row][col] = std::make_unique<King>(Board::black);
+                setBlackKingPos(row, col);
                 break;
                 // TODO Add cases for other pieces
 
@@ -49,6 +72,12 @@ void Board::initializeBoard(const std::string& boardString)
                 break;
             }
         }
+    printBoardTest();
+    
+}
+
+void Board::printBoardTest() const
+{
     for (int row = 0; row < 8; ++row)
     {
         for (int col = 0; col < 8; ++col)
@@ -60,7 +89,6 @@ void Board::initializeBoard(const std::string& boardString)
         }
         std::cout << std::endl;
     }
-    
 }
 
 Piece* Board::getPiece(int row, int col) const
@@ -90,11 +118,23 @@ bool Board::movePiece(int srcRow, int srcCol, int destRow, int destCol)
     Piece* piece = getPiece(srcRow, srcCol);
     if (!piece)
         return false;
+    if(piece->getSymbol() == 'K')
+		setWhiteKingPos(destRow, destCol);
+    if(piece->getSymbol() == 'k')
+		setBlackKingPos(destRow, destCol);
 
 
     board[destRow][destCol] = std::move(board[srcRow][srcCol]);
-    board[srcRow][srcCol].reset();
+    if(board[srcRow][srcCol])
+        board[srcRow][srcCol].reset();
     return true;
+}
+
+Board* Board::simulateMove(int srcRow, int srcCol, int destRow, int destCol) const
+{
+    Board* boardCopy = new Board(*this); // Copy the current board (deep copy of pieces
+    boardCopy->movePiece(srcRow, srcCol, destRow, destCol);
+    return boardCopy;
 }
 
 bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
@@ -146,11 +186,15 @@ bool Board::isWithinBounds(int row, int col)
 }
 std::vector<std::unique_ptr<Piece>>& Board::operator[](int row)
 {
+    if (row < 0 || row > 7)
+        throw std::out_of_range("Invalid row index");
     return board[row];
 }
 
 // Overload the subscript operator for const access
 const std::vector<std::unique_ptr<Piece>>& Board::operator[](int row) const
 {
+    if(row < 0 || row > 7)
+		throw std::out_of_range("Invalid row index");
     return board[row];
 }
