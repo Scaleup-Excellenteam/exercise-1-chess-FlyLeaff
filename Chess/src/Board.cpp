@@ -3,6 +3,9 @@
 #include "King.h"
 #include <stdexcept>
 #include <iostream>
+#include <Bishop.h>
+#include "ConstUtils.h"
+#include <Queen.h>
 // Include other piece headers as needed
 
 Board::Board()
@@ -48,23 +51,35 @@ void Board::initializeBoard(const std::string& boardString)
             char pieceChar = boardString[row * 8 + col];
             switch (pieceChar)
             {
-            case '#':
+            case empty:
                 board[row][col] = nullptr;
                 break;
-            case 'R':
-                board[row][col] = std::make_unique<Rook>(Board::white);
+            case whiteRook:
+                board[row][col] = std::make_unique<Rook>(white);
                 break;
-            case 'r':
-                board[row][col] = std::make_unique<Rook>(Board::black);
+            case blackRook:
+                board[row][col] = std::make_unique<Rook>(black);
                 break;
-            case 'K':
-                board[row][col] = std::make_unique<King>(Board::white);
+            case whiteKing:
+                board[row][col] = std::make_unique<King>(white);
                 setWhiteKingPos(row, col);
                 break;
-            case 'k':
-                board[row][col] = std::make_unique<King>(Board::black);
+            case blackKing:
+                board[row][col] = std::make_unique<King>(black);
                 setBlackKingPos(row, col);
                 break;
+            case whiteBishop:
+                board[row][col] = std::make_unique<Bishop>(white);
+                break;
+            case blackBishop:
+                 board[row][col] = std::make_unique<Bishop>(black);
+                 break;
+            case whiteQueen:
+                board[row][col] = std::make_unique<Queen>(white);
+                break;
+			case blackQueen:
+                board[row][col] = std::make_unique<Queen>(black);
+    			break;
                 // TODO Add cases for other pieces
 
             default:
@@ -118,9 +133,9 @@ bool Board::movePiece(int srcRow, int srcCol, int destRow, int destCol)
     Piece* piece = getPiece(srcRow, srcCol);
     if (!piece)
         return false;
-    if(piece->getSymbol() == 'K')
+    if(piece->getSymbol() == whiteKing)
 		setWhiteKingPos(destRow, destCol);
-    if(piece->getSymbol() == 'k')
+    if(piece->getSymbol() == blackKing)
 		setBlackKingPos(destRow, destCol);
 
 

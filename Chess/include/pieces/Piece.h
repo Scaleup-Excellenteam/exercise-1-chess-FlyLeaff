@@ -2,6 +2,8 @@
 #include <vector>
 #include <memory>
 #include "MovementStrats.h"
+#include "ConstUtils.h"
+
 class Piece
 {
 protected:

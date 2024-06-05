@@ -1,6 +1,6 @@
 #include "King.h"
 
-King::King() : Piece('K', 'w')
+King::King() : Piece(whiteKing, white)
 {
 	movementStrategies.push_back(std::make_unique<KingMovement>());
 }
@@ -8,6 +8,6 @@ King::King() : Piece('K', 'w')
 King::King(char color)
 {
 	movementStrategies.push_back(std::make_unique<KingMovement>());
-	symbol = color == 'w' ? 'K' : 'k';
+	symbol = color == white ? whiteKing : blackKing;
 	this->color = color;
 }

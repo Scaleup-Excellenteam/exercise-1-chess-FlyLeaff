@@ -2,7 +2,7 @@
 #include "Rook.h"
 
 
-Rook::Rook() : Piece('R','w')
+Rook::Rook() : Piece(whiteRook,white)
 {
 	movementStrategies.push_back(std::make_unique<HorizontalVerticalMovement>());
 }
@@ -11,6 +11,6 @@ Rook::Rook(char color)
 {
 
 	movementStrategies.push_back(std::make_unique<HorizontalVerticalMovement>());
-	symbol = color == 'w' ? 'R' : 'r';
+	symbol = color == white ? whiteRook : blackRook;
 	this->color = color;
 }

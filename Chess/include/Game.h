@@ -28,6 +28,7 @@ public:
 
     bool isWhitePiece(char pieceSymbol) const;
     char getCurrentPlayerColor() const;
+    char getOpponentColor() const;
 
     // Static function to parse chess notation
     static std::pair<std::pair<int, int>, std::pair<int, int>> parseMove(const std::string& move);

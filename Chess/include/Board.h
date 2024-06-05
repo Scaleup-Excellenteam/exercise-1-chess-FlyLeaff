@@ -35,8 +35,7 @@ public:
     void setWhiteKingPos(int row, int col) { whiteKingPos = std::make_pair(row, col); }
     void setBlackKingPos(int row, int col) { blackKingPos = std::make_pair(row, col); }
 
-    static const char white = 'w';
-    static const char black = 'b';
+
 };
 
 #endif // BOARD_H

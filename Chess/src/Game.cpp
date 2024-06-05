@@ -18,11 +18,11 @@ bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
 {
     if (board.movePiece(srcRow, srcCol, destRow, destCol))
     {
-        if (board[destRow][destCol]->getSymbol() == 'K')
+        if (board[destRow][destCol]->getSymbol() == whiteKing)
         {   // keep track of kings position for check checks
             board.setWhiteKingPos(destRow, destCol);
         }
-        if (board[destRow][destCol]->getSymbol() == 'k')
+        if (board[destRow][destCol]->getSymbol() == blackKing)
         {
             board.setBlackKingPos(destRow, destCol);
 		}
@@ -56,7 +56,6 @@ bool Game::isLegalMove(int srcRow, int srcCol, int destRow, int destCol) const
     if (doesMoveCauseSelfCheck(srcRow, srcCol, destRow, destCol))
         throw MoveCausesSelfCheckException();
 
-    //TODO add self check move check
 
     Piece* destPiece = board.getPiece(destRow, destCol);
     if (destPiece)
@@ -80,8 +79,8 @@ bool Game::doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destC
 }
 bool Game::innerIsCheck(Board& tempBoard,char color) const
 {
-    auto kingPos = (color == Board::white) ? tempBoard.getWhiteKingPos() : tempBoard.getBlackKingPos();
-    char opponentColor = (color == Board::white) ? Board::black : Board::white;
+    auto kingPos = (color == white) ? tempBoard.getWhiteKingPos() : tempBoard.getBlackKingPos();
+    char opponentColor = (color == white) ? black : white;
 
     for (int row = 0; row < 8; ++row)
     {
@@ -121,7 +120,12 @@ bool Game::isWhitePiece(char pieceSymbol) const
 
 char Game::getCurrentPlayerColor() const
 {
-    return isWhiteTurn() ? Board::white : Board::black;
+    return isWhiteTurn() ? white : black;
+}
+
+char Game::getOpponentColor() const
+{
+    return isWhiteTurn() ? black : white;
 }
 
 

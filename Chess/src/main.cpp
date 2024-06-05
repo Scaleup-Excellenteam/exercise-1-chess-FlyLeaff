@@ -6,7 +6,7 @@
 int main()
 {
     //string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
-    std::string board = "#####K#R####r###########################################r######r";
+    std::string board = "B####K#R####r####Q###################################q##r###k##r";
 
     Chess a(board);
     Game game;
@@ -47,11 +47,11 @@ int main()
             int destRow = destPos.second;
             if(game.isLegalMove(srcRow, srcCol, destRow, destCol))
             {
-                char ch = game.getCurrentPlayerColor();
+                
                 codeResponse = LegalMoveException().getErrorCode(); // Move is legal and does not cause check
 
                 game.movePiece(srcRow, srcCol, destRow, destCol);
-                if (game.isCheck(ch))
+                if (game.isCheck(game.getCurrentPlayerColor()))
                     codeResponse = MoveChecksOpponentException().getErrorCode(); // Move is legal and causes check
             }
 			else

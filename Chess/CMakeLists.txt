@@ -21,4 +21,4 @@ set(SOURCES
 
     
 # Add the executable
-add_executable(Chess ${SOURCES})
+add_executable(Chess ${SOURCES} "include/pieces/Bishop.h" "include/pieces/Queen.h" "src/pieces/Bishop.cpp" "src/pieces/Queen.cpp" "include/ConstUtils.h")
