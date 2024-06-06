@@ -2,12 +2,12 @@
 #include "Rook.h"
 
 
-Rook::Rook() : Piece(whiteRook,white)
+Rook::Rook() :wasMoved(false), Piece(whiteRook,white)
 {
 	movementStrategies.push_back(std::make_unique<HorizontalVerticalMovement>());
 }
 
-Rook::Rook(char color)
+Rook::Rook(char color) :wasMoved(false)
 {
 
 	movementStrategies.push_back(std::make_unique<HorizontalVerticalMovement>());

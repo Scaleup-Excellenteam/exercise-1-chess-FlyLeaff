@@ -45,6 +45,7 @@ Board::Board()
     {
         row.resize(8);
     }
+
 }
 
 Board::Board(const Board& other) {
@@ -66,6 +67,7 @@ Board::Board(const Board& other) {
     // Copy king positions
     whiteKingPos = other.whiteKingPos;
     blackKingPos = other.blackKingPos;
+
 }
 
 void Board::initializeBoard(const std::string& boardString)
@@ -239,7 +241,7 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
         if (move.first == destRow && move.second == destCol)
         {
             // Check for path blocking for sliding pieces: Rook, Bishop, and Queen
-            if (srcSymbol == whiteRook || srcSymbol == blackRook || srcSymbol == whiteBishop || blackBishop || srcSymbol == whiteQueen || srcSymbol == blackQueen)
+            if (isSlidingPiece(srcSymbol))
             {
                 int rowStep = (destRow - srcRow) ? (destRow - srcRow) / abs(destRow - srcRow) : 0;
                 int colStep = (destCol - srcCol) ? (destCol - srcCol) / abs(destCol - srcCol) : 0;
@@ -250,36 +252,7 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
                         return false;
                 }
             }
-
-            switch (srcSymbol)
-            {
-                case whiteRook:
-                {
-
-                }
-                // fall through
-                case blackRook:
-                {
-                    break;
-                }
-                case whiteBishop:
-                {
-					break;
-				}
-                case blackBishop:
-                {
-                    break;
-                }
-
-
-
-
-                {
-                default:
-                    break;
-                }
-            }
-               
+            
 
             Piece* destPiece = getPiece(destRow, destCol);
             if (destPiece)
@@ -304,8 +277,63 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
             return true;
         }
     }
+   
+
+ //   if (srcSymbol == whiteKing || srcSymbol == blackKing)
+ //   {
+	//	if (canCastle(srcSymbol, destRow, destCol))
+	//		return true;
+	//}
+    // chess.cpp doesnt support castling so i cannot utilize this
+ 
 
     return false;
+}
+bool Board::canCastle(char srcSymbol, int destRow, int destCol) const
+{
+    int row = (srcSymbol == whiteKing) ? 0 : 7;
+    int kingsideRookCol = 7;
+    int queensideRookCol = 0;
+
+    King* king = dynamic_cast<King*>(board[row][4].get());  // this will fail if not a king
+    if (king && !king->wasMoved && !king->wasChecked)
+    {
+        if (destCol == 6 && destRow == row) // Kingside
+        {
+            if (Rook* rook = dynamic_cast<Rook*>(board[row][kingsideRookCol].get()))
+            {
+                if (!rook->wasMoved)
+                {
+                    for (int i = 5; i < 7; ++i)
+                        if (board[row][i])
+                            return false;
+                    return true;
+                }
+            }
+        }
+        else if (destCol == 2 && destRow == row) // Queenside
+        {
+            if (Rook* rook = dynamic_cast<Rook*>(board[row][queensideRookCol].get()))
+            {
+                if (!rook->wasMoved)
+                {
+                    for (int i = 1; i < 4; ++i)
+                        if (board[row][i])
+                            return false;
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+
+bool Board::isSlidingPiece(char srcSymbol) const
+{
+    return srcSymbol == whiteRook || srcSymbol == blackRook || srcSymbol == whiteBishop ||
+             srcSymbol == blackBishop || srcSymbol == whiteQueen || srcSymbol == blackQueen;
 }
 
 

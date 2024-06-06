@@ -13,23 +13,29 @@ private:
     mutable Board board;
     bool whiteTurn;
     bool innerIsCheck(Board& tempBoard, char color) const;
+    void switchTurn();
+    bool doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destCol) const;
+    char getOpponentColor() const;
+    bool isWhitePiece(char pieceSymbol) const;
+
+    bool isWhiteTurn() const { return whiteTurn; }
+ 
+    bool didWhiteCastleLastTurn;
+    bool didBlackCastleLastTurn;
 
 public:
     Game();
     void initialize(const std::string& boardString);
-    void switchTurn();
     bool movePiece(int srcRow, int srcCol, int destRow, int destCol);
-    bool isWhiteTurn() const { return whiteTurn; }
     bool isGameOver() const;
     bool isLegalMove(int srcRow, int srcCol, int destRow, int destCol) const;
-    bool doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destCol) const;
 
+    std::string lastCastleMove() const;
 
     bool isCheck(char color) const;
+    //TODO: Implement checkmate
 
-    bool isWhitePiece(char pieceSymbol) const;
     char getCurrentPlayerColor() const;
-    char getOpponentColor() const;
 
     // Static function to parse chess notation
     static std::pair<std::pair<int, int>, std::pair<int, int>> parseMove(const std::string& move);

@@ -5,17 +5,18 @@
 
 int main()
 {
-    //string board = "RNBQKBNRPPPPPPPP####################P###########pppppppprnbqkbnr"; 
-    //std::string board = "RNBQKBNRPPPP#PPP################################pppp#pppprnbqkbnr"
+    //string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
+    //std::string board = "########R###K##############################r###k########"
+
     std::string board = std::string(
-        "R#kK#br#") + 
+        "R###Kbr#") + 
         "########" + 
         "########" + 
         "########" + 
         "########" + 
         "########" + 
         "########" + 
-        "########";
+        "r###k##r";
 
 
 
@@ -65,7 +66,14 @@ int main()
                 if (game.isCheck(game.getCurrentPlayerColor()))
                     codeResponse = MoveChecksOpponentException().getErrorCode(); // Move is legal and causes check
 
+                //if (game.lastCastleMove() != "didnt Castle")
+                //    a.execute(game.lastCastleMove());
+                // so apparently i cannot execute a move without passing a turn OR simply move a piece visually without sending a 42
+                // and i implemented castling for no reason :'(
+                // this is what the code would have been to move the rook visually in castling
+
                 game.isGameOver();
+
             }
 			else
 			{

@@ -1,7 +1,13 @@
 #include "Game.h"
 #include <iostream>
+#include <King.h>
 Game::Game() : whiteTurn(true)
 {
+	board.setWhiteKingPos(0, 4);
+	board.setBlackKingPos(7, 4);
+
+    didBlackCastleLastTurn = false;
+    didWhiteCastleLastTurn = false;
 }
 
 void Game::initialize(const std::string& boardString)
@@ -22,11 +28,41 @@ bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
         if (board[destRow][destCol]->getSymbol() == whiteKing)
         {   // keep track of kings position for check checks
             board.setWhiteKingPos(destRow, destCol);
+            if (King* king = dynamic_cast<King*>(board[destRow][destCol].get())) 
+                king->wasMoved = true;
+            
+            if (srcRow == 0 && srcCol == 4 && destRow == 0 && destCol == 6)
+            {
+				board.movePiece(0, 7, 0, 5);
+                didWhiteCastleLastTurn = true;
+			}
+			if (srcRow == 0 && srcCol == 4 && destRow == 0 && destCol == 2)
+			{
+				board.movePiece(0, 0, 0, 3);
+                didWhiteCastleLastTurn = true;
+			}
         }
-        if (board[destRow][destCol]->getSymbol() == blackKing)
+        else if (board[destRow][destCol]->getSymbol() == blackKing)
         {
             board.setBlackKingPos(destRow, destCol);
+            if (King* king = dynamic_cast<King*>(board[destRow][destCol].get()))           
+                king->wasMoved = true;
+            if (srcRow == 7 && srcCol == 4 && destRow == 7 && destCol == 6)
+            {
+                board.movePiece(7, 7, 7, 5);
+                didBlackCastleLastTurn = true;
+            }
+            if (srcRow == 7 && srcCol == 4 && destRow == 7 && destCol == 2)
+            {
+				board.movePiece(7, 0, 7, 3);
+                didBlackCastleLastTurn = true;
+			}
 		}
+        else 
+        {
+            didBlackCastleLastTurn = false;
+            didWhiteCastleLastTurn = false;
+        }
         switchTurn();
         return true;
     }
@@ -78,6 +114,20 @@ bool Game::doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destC
 
     return innerIsCheck(*board.simulateMove(srcRow, srcCol, destRow, destCol), board[srcRow][srcCol]->getColor());
 }
+std::string Game::lastCastleMove() const
+{
+    if (didWhiteCastleLastTurn)
+		if(board.getWhiteKingPos().second == 6)
+            return "a8a6";
+    else
+            return "a1a4";
+    if (didBlackCastleLastTurn)
+        if(board.getBlackKingPos().second == 6)
+			return "h8h4";
+	else
+			return "h8h2";
+    return "didnt Castle";
+}
 bool Game::innerIsCheck(Board& tempBoard,char color) const
 {
     auto kingPos = (color == white) ? tempBoard.getWhiteKingPos() : tempBoard.getBlackKingPos();
@@ -91,7 +141,13 @@ bool Game::innerIsCheck(Board& tempBoard,char color) const
             if (piece && (getCurrentPlayerColor() != piece->getColor()))
             {
                 if (tempBoard.isValidMove(row, col, kingPos.first, kingPos.second))
+                { 
+                    if (King* king = dynamic_cast<King*>(board[kingPos.first][kingPos.second].get()))
+                        king->wasChecked = true;
                     return true;
+                
+                }
+                    
             }
         }
     }

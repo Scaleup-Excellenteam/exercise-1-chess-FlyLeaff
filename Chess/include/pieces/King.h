@@ -3,9 +3,15 @@
 
 class King : public Piece
 {
+private:
 
-	public:
+public:
 	King();
 	King(char color);
+	bool wasChecked;
+	bool wasMoved;
+
+
+
 
 };
