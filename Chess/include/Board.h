@@ -25,7 +25,7 @@ public:
     Board* simulateMove(int srcRow, int srcCol, int destRow, int destCol) const;
     bool isValidMove(int srcRow, int srcCol, int destRow, int destCol) const;
 
-    static bool isWithinBounds(int row, int col);
+
 
     std::vector<std::unique_ptr<Piece>>& operator[](int row);
     const std::vector<std::unique_ptr<Piece>>& operator[](int row) const;

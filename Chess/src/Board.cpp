@@ -6,6 +6,8 @@
 #include <Bishop.h>
 #include "ConstUtils.h"
 #include <Queen.h>
+#include <Knight.h>
+#include <Pawn.h>
 // Include other piece headers as needed
 
 Board::Board()
@@ -80,7 +82,19 @@ void Board::initializeBoard(const std::string& boardString)
 			case blackQueen:
                 board[row][col] = std::make_unique<Queen>(black);
     			break;
-                // TODO Add cases for other pieces
+            case whiteKnight:
+                board[row][col] = std::make_unique<Knight>(white);
+                break;
+            case blackKnight:
+                board[row][col] = std::make_unique<Knight>(black);
+                break;
+            case whitePawn:
+                board[row][col] = std::make_unique<Pawn>(white);
+                break;
+            case blackPawn:
+                board[row][col] = std::make_unique<Pawn>(black);
+				break;
+
 
             default:
                 board[row][col] = nullptr;
@@ -167,7 +181,7 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
         if (move.first == destRow && move.second == destCol)
         {
             // Check for path blocking for sliding pieces: Rook, Bishop, and Queen
-            if (dynamic_cast<Rook*>(srcPiece) ) //|| dynamic_cast<Bishop*>(srcPiece) || dynamic_cast<Queen*>(srcPiece)
+            if (dynamic_cast<Rook*>(srcPiece) || dynamic_cast<Bishop*>(srcPiece) || dynamic_cast<Queen*>(srcPiece))
             {
                 int rowStep = (destRow - srcRow) ? (destRow - srcRow) / abs(destRow - srcRow) : 0;
                 int colStep = (destCol - srcCol) ? (destCol - srcCol) / abs(destCol - srcCol) : 0;
@@ -187,6 +201,14 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
                     return false;
             }
 
+            // Handle pawn captures
+            if (dynamic_cast<Pawn*>(srcPiece))
+            {
+                int direction = srcPiece->getColor() == 'W' ? 1 : -1;
+                if (destCol != srcCol && !destPiece)
+                    return false; // Pawns can only move diagonally if capturing
+            }
+
             return true;
         }
     }
@@ -195,10 +217,6 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
 }
 
 
-bool Board::isWithinBounds(int row, int col) 
-{
-    return row >= 0 && row < 8 && col >= 0 && col < 8;
-}
 std::vector<std::unique_ptr<Piece>>& Board::operator[](int row)
 {
     if (row < 0 || row > 7)

@@ -1,4 +1,5 @@
 #include "MovementStrats.h"
+#include "ConstUtils.h"
 
 std::vector<std::pair<int, int>> HorizontalVerticalMovement::getValidMoves(int srcRow, int srcCol) const
 {
@@ -91,20 +92,37 @@ std::unique_ptr<MovementStrategy> KnightMovement::clone() const
 std::vector<std::pair<int, int>> PawnMovement::getValidMoves(int srcRow, int srcCol) const
 {
     std::vector<std::pair<int, int>> moves;
-    int direction = 1; // Assuming white pieces move upwards
-    if (srcRow + direction < 8)
+    int direction = isWhite ? 1 : -1; // White pawns move down (+1), black pawns move up (-1)
+
+    // Move forward one square
+    if (isWithinBounds(srcRow + direction, srcCol))
     {
-        moves.emplace_back(srcRow + direction, srcCol); // Move forward
-        if (srcRow == 1 && srcRow + 2 * direction < 8)
-            moves.emplace_back(srcRow + 2 * direction, srcCol); // Double move forward
-        if (srcCol > 0)
-            moves.emplace_back(srcRow + direction, srcCol - 1); // Capture left
-        if (srcCol < 7)
-            moves.emplace_back(srcRow + direction, srcCol + 1); // Capture right
+        moves.emplace_back(srcRow + direction, srcCol);
+
+        // Move forward two squares from the starting position
+        if ((isWhite && srcRow == 1) || (!isWhite && srcRow == 6))
+        {
+            if (isWithinBounds(srcRow + 2 * direction, srcCol))
+            {
+                moves.emplace_back(srcRow + 2 * direction, srcCol);
+            }
+        }
     }
+
+    // Capture left
+    if (isWithinBounds(srcRow + direction, srcCol - 1))
+    {
+        moves.emplace_back(srcRow + direction, srcCol - 1);
+    }
+
+    // Capture right
+    if (isWithinBounds(srcRow + direction, srcCol + 1))
+    {
+        moves.emplace_back(srcRow + direction, srcCol + 1);
+    }
+
     return moves;
 }
-
 std::unique_ptr<MovementStrategy> PawnMovement::clone() const
 {
     return std::make_unique<PawnMovement>(*this);

@@ -14,3 +14,9 @@ static const char blackQueen = 'q';
 static const char whitePawn = 'P';
 static const char blackPawn = 'p';
 static const char empty = '#';
+
+
+static bool isWithinBounds(int row, int col)
+{
+    return row >= 0 && row < 8 && col >= 0 && col < 8;
+}

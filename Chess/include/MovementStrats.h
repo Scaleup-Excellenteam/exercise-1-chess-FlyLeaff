@@ -45,8 +45,12 @@ public:
 class PawnMovement : public MovementStrategy
 {
 public:
+    explicit PawnMovement(bool isWhite) : isWhite(isWhite) {}
     std::vector<std::pair<int, int>> getValidMoves(int srcRow, int srcCol) const override;
+
     virtual std::unique_ptr<MovementStrategy> clone() const override;
+private:
+    bool isWhite;
 };
 
 #endif // MOVEMENT_STRATS_H

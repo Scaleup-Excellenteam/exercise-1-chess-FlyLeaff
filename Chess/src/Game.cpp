@@ -34,7 +34,7 @@ bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
 
 bool Game::isLegalMove(int srcRow, int srcCol, int destRow, int destCol) const
 {
-    if (!Board::isWithinBounds(srcRow, srcCol) || !Board::isWithinBounds(destRow, destCol))
+    if (!isWithinBounds(srcRow, srcCol) || !isWithinBounds(destRow, destCol))
         throw OutOfBoundsException();
 	
 
