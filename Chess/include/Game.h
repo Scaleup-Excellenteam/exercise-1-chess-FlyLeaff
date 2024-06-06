@@ -24,6 +24,7 @@ public:
     bool isLegalMove(int srcRow, int srcCol, int destRow, int destCol) const;
     bool doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destCol) const;
 
+
     bool isCheck(char color) const;
 
     bool isWhitePiece(char pieceSymbol) const;

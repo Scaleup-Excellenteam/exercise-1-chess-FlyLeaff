@@ -174,23 +174,41 @@ bool Board::movePiece(int srcRow, int srcCol, int destRow, int destCol)
     Piece* piece = getPiece(srcRow, srcCol);
     if (!piece)
         return false;
-    if(piece->getSymbol() == whiteKing)
+    char symbol = piece->getSymbol();
+    if(symbol == whiteKing)
 		setWhiteKingPos(destRow, destCol);
-    if(piece->getSymbol() == blackKing)
+    if(symbol == blackKing)
 		setBlackKingPos(destRow, destCol);
-    if(piece->getSymbol() == whitePawn && destRow == 0)
-    {//TODO handle promotion 
-    }
-    if(piece->getSymbol() == blackPawn && destRow == 7)
-	{//TODO handle promotion 
-    }
-    if(piece->getSymbol() == whitePawn && srcRow == 1 && destRow == 3)
-    	enPassantMoves.push_back(std::make_pair(std::make_pair(destRow-1, destCol), 1));
 
-    if(piece->getSymbol() == blackPawn && srcRow == 6 && destRow == 4)
-    	enPassantMoves.push_back(std::make_pair(std::make_pair(destRow+1, destCol), 1));
-    	
+    if (symbol == whitePawn || symbol == blackPawn) //TODO optimize this
+    {
+        int direction = symbol == 'W' ? -1 : 1;
+        if (symbol == whitePawn && destRow == 0)
+        {//TODO handle promotion 
+        }
+        if (symbol == blackPawn && destRow == 7)
+        {//TODO handle promotion 
+            // on a second look, there is no implementation for promotion in the chess.cpp file provided, so this is not needed
+            // ill leave this here for now just in case
+        }
+        if (symbol == whitePawn && srcRow == 1 && destRow == 3)
+            enPassantMoves.push_back(std::make_pair(std::make_pair(destRow + direction, destCol), 1));
 
+        if (symbol == blackPawn && srcRow == 6 && destRow == 4)
+            enPassantMoves.push_back(std::make_pair(std::make_pair(destRow + direction, destCol), 1));
+
+        if (isEnpassant(srcRow, srcCol, destRow, destCol))
+            board[destRow + direction][destCol].reset();
+    }
+	Piece* destPiece = board[destRow][destCol].get();
+    if (destPiece)
+    {
+		char destSymbol = destPiece->getSymbol();
+		if (destSymbol == whiteKing)
+			setWhiteKingPos(-1, -1);
+		if (destSymbol == blackKing)
+			setBlackKingPos(-1, -1);
+	}
     board[destRow][destCol] = std::move(board[srcRow][srcCol]);
     if(board[srcRow][srcCol])
         board[srcRow][srcCol].reset();
@@ -212,6 +230,8 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
     Piece* srcPiece = getPiece(srcRow, srcCol);
     if (!srcPiece)
         return false;
+    char srcColor = srcPiece->getColor();
+    char srcSymbol = srcPiece->getSymbol();
 
     auto validMoves = srcPiece->getValidMoves(srcRow, srcCol);
     for (const auto& move : validMoves)
@@ -219,28 +239,60 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
         if (move.first == destRow && move.second == destCol)
         {
             // Check for path blocking for sliding pieces: Rook, Bishop, and Queen
-            if (dynamic_cast<Rook*>(srcPiece) || dynamic_cast<Bishop*>(srcPiece) || dynamic_cast<Queen*>(srcPiece))
+            if (srcSymbol == whiteRook || srcSymbol == blackRook || srcSymbol == whiteBishop || blackBishop || srcSymbol == whiteQueen || srcSymbol == blackQueen)
             {
                 int rowStep = (destRow - srcRow) ? (destRow - srcRow) / abs(destRow - srcRow) : 0;
                 int colStep = (destCol - srcCol) ? (destCol - srcCol) / abs(destCol - srcCol) : 0;
-                for (int r = srcRow + rowStep, c = srcCol + colStep; r != destRow || c != destCol; r += rowStep, c += colStep)  //Bug check this
+
+                for (int r = srcRow + rowStep, c = srcCol + colStep; r != destRow || c != destCol; r += rowStep, c += colStep)
                 {
                     if (board[r][c])
                         return false;
                 }
             }
 
+            switch (srcSymbol)
+            {
+                case whiteRook:
+                {
+
+                }
+                // fall through
+                case blackRook:
+                {
+                    break;
+                }
+                case whiteBishop:
+                {
+					break;
+				}
+                case blackBishop:
+                {
+                    break;
+                }
+
+
+
+
+                {
+                default:
+                    break;
+                }
+            }
+               
+
             Piece* destPiece = getPiece(destRow, destCol);
             if (destPiece)
             {
-                bool isSrcWhite = (srcPiece->getSymbol() >= 'A' && srcPiece->getSymbol() <= 'Z');
-                bool isDestWhite = (destPiece->getSymbol() >= 'A' && destPiece->getSymbol() <= 'Z');
-                if (isSrcWhite == isDestWhite)
-                    return false;
+                char destColor = destPiece->getColor();
+
+                if(srcColor == destColor)
+					return false;   // self capture
+
             }
 
             // Handle pawn captures
-            if (dynamic_cast<Pawn*>(srcPiece))
+            if (srcSymbol == whitePawn || srcSymbol == blackPawn)
             {
                 if (isEnpassant(srcRow, srcCol, destRow, destCol))
                     return true; 

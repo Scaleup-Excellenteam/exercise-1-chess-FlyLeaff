@@ -56,5 +56,10 @@ class LegalMoveException : public ChessException {
 public:
     LegalMoveException() : ChessException(42, "Move is legal") {}
 };
+class GameOverException : public ChessException {
+public:
+    GameOverException() : ChessException(0, "Game Over!") {}
+    GameOverException(const std::string& message) : ChessException(0, message) {}
+};
 
 #endif // CHESS_EXCEPTIONS_H

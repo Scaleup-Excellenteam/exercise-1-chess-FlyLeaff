@@ -5,8 +5,17 @@
 
 int main()
 {
-    string board = "RNBQKBNRPPPPPPPP####################P###########pppppppprnbqkbnr"; 
+    //string board = "RNBQKBNRPPPPPPPP####################P###########pppppppprnbqkbnr"; 
     //std::string board = "RNBQKBNRPPPP#PPP################################pppp#pppprnbqkbnr"
+    std::string board = std::string(
+        "R#kK#br#") + 
+        "########" + 
+        "########" + 
+        "########" + 
+        "########" + 
+        "########" + 
+        "########" + 
+        "########";
 
 
 
@@ -55,18 +64,21 @@ int main()
                 game.movePiece(srcRow, srcCol, destRow, destCol);
                 if (game.isCheck(game.getCurrentPlayerColor()))
                     codeResponse = MoveChecksOpponentException().getErrorCode(); // Move is legal and causes check
+
+                game.isGameOver();
             }
 			else
 			{
 				codeResponse = IllegalMoveException().getErrorCode(); // Move is illegal
 			}
-           
 
         }
         catch (const ChessException& e) 
         {
-			std::cout << "Error: " << e.what() << std::endl;
+			std::cout << e.what() << std::endl;
 			codeResponse = e.getErrorCode();
+            if (e.getErrorCode() == 0)
+                break;
 		}
 
         catch (const std::exception& e) 
@@ -77,6 +89,7 @@ int main()
 
         a.setCodeResponse(codeResponse);
         res = a.getInput();
+
     }
 
     std::cout << std::endl << "Exiting " << std::endl;

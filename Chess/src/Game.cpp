@@ -110,7 +110,10 @@ bool Game::isCheck(char color) const
 
 bool Game::isGameOver() const
 {
-    // Add logic to determine if the game is over
+    if (board.getBlackKingPos().first == -1)
+        throw GameOverException("Game over!. White won!");
+    if (board.getWhiteKingPos().first == -1)
+        throw GameOverException("Game over!. Black won!");
     return false;
 }
 
