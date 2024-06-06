@@ -13,6 +13,9 @@ private:
     std::vector<std::vector<std::unique_ptr<Piece>>> board;
     std::pair<int, int> whiteKingPos;
     std::pair<int, int> blackKingPos;
+
+    std::vector<std::pair<std::pair<int, int>,int>> enPassantMoves; //a pair of the enpasant'able position, and an int to countdown the number of turns it has left(2 turns)
+    bool isEnpassant(int srcRow, int srcCol,int destRow,int destCol) const;
 public:
     Board();
     Board(const Board& other);
@@ -25,6 +28,7 @@ public:
     Board* simulateMove(int srcRow, int srcCol, int destRow, int destCol) const;
     bool isValidMove(int srcRow, int srcCol, int destRow, int destCol) const;
 
+    void updateEnPassantMoves();
 
 
     std::vector<std::unique_ptr<Piece>>& operator[](int row);

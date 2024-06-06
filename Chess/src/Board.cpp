@@ -10,6 +10,33 @@
 #include <Pawn.h>
 // Include other piece headers as needed
 
+void Board::updateEnPassantMoves()
+{
+    for (int i = enPassantMoves.size() - 1; i >= 0; --i)
+    {
+        if (enPassantMoves[i].second == 0)
+            enPassantMoves.erase(enPassantMoves.begin() + i);
+        else
+            enPassantMoves[i].second--;
+    }
+}
+
+bool Board::isEnpassant(int srcRow, int srcCol, int destRow, int destCol) const
+{
+    int direction = board[srcRow][srcCol]->getColor() == 'W' ? -1 : 1;
+
+    for (auto enpasantMove : enPassantMoves)
+    {
+        if (enpasantMove.first.first == destRow && enpasantMove.first.second == destCol)
+        {
+            if (srcRow + direction == destRow && abs(srcCol - destCol) == 1)
+            {
+                return true;
+            }
+        }
+    }
+}
+
 Board::Board()
 {
     // Initialize the board with null pointers
@@ -151,7 +178,18 @@ bool Board::movePiece(int srcRow, int srcCol, int destRow, int destCol)
 		setWhiteKingPos(destRow, destCol);
     if(piece->getSymbol() == blackKing)
 		setBlackKingPos(destRow, destCol);
+    if(piece->getSymbol() == whitePawn && destRow == 0)
+    {//TODO handle promotion 
+    }
+    if(piece->getSymbol() == blackPawn && destRow == 7)
+	{//TODO handle promotion 
+    }
+    if(piece->getSymbol() == whitePawn && srcRow == 1 && destRow == 3)
+    	enPassantMoves.push_back(std::make_pair(std::make_pair(destRow-1, destCol), 1));
 
+    if(piece->getSymbol() == blackPawn && srcRow == 6 && destRow == 4)
+    	enPassantMoves.push_back(std::make_pair(std::make_pair(destRow+1, destCol), 1));
+    	
 
     board[destRow][destCol] = std::move(board[srcRow][srcCol]);
     if(board[srcRow][srcCol])
@@ -204,9 +242,11 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
             // Handle pawn captures
             if (dynamic_cast<Pawn*>(srcPiece))
             {
-                int direction = srcPiece->getColor() == 'W' ? 1 : -1;
+                if (isEnpassant(srcRow, srcCol, destRow, destCol))
+                    return true; 
                 if (destCol != srcCol && !destPiece)
                     return false; // Pawns can only move diagonally if capturing
+
             }
 
             return true;

@@ -5,8 +5,10 @@
 
 int main()
 {
-    string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
-    //std::string board = "B#Nn#K#RP###r####Q###################################q#pr###k##r";
+    string board = "RNBQKBNRPPPPPPPP####################P###########pppppppprnbqkbnr"; 
+    //std::string board = "RNBQKBNRPPPP#PPP################################pppp#pppprnbqkbnr"
+
+
 
     Chess a(board);
     Game game;

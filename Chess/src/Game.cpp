@@ -12,6 +12,7 @@ void Game::initialize(const std::string& boardString)
 void Game::switchTurn()
 {
     whiteTurn = !whiteTurn;
+    board.updateEnPassantMoves();
 }
 
 bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
