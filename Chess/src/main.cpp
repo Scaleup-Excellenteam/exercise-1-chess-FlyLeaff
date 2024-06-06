@@ -5,18 +5,18 @@
 
 int main()
 {
-    //string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
+    string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
     //std::string board = "########R###K##############################r###k########"
 
-    std::string board = std::string(
-        "R###Kbr#") + 
-        "########" + 
-        "########" + 
-        "########" + 
-        "########" + 
-        "########" + 
-        "########" + 
-        "r###k##r";
+    //std::string board = std::string(
+    //    "R###Kbr#") + 
+    //    "########" + 
+    //    "########" + 
+    //    "########" + 
+    //    "########" + 
+    //    "########" + 
+    //    "########" + 
+    //    "r###k##r";
 
 
 

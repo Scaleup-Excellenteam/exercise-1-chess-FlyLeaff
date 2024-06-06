@@ -35,6 +35,7 @@ bool Board::isEnpassant(int srcRow, int srcCol, int destRow, int destCol) const
             }
         }
     }
+    return false;
 }
 
 Board::Board()
