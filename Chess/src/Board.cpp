@@ -268,6 +268,8 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
             // Handle pawn captures
             if (srcSymbol == whitePawn || srcSymbol == blackPawn)
             {
+                if(destPiece && destCol==srcCol)
+					return false; // Pawns cant eat forward
                 if (isEnpassant(srcRow, srcCol, destRow, destCol))
                     return true; 
                 if (destCol != srcCol && !destPiece)

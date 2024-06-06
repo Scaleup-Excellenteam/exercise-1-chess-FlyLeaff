@@ -71,6 +71,10 @@ int main()
                 // so apparently i cannot execute a move without passing a turn OR simply move a piece visually without sending a 42
                 // and i implemented castling for no reason :'(
                 // this is what the code would have been to move the rook visually in castling
+                //
+                // also, enpassant is implemented in the board class, but not in the chess class
+                // so i cannot move a pawn to the enpassant position without sending a 42 again and thus the captured
+                // pawn will not be removed from the board :|
 
                 game.isGameOver();
 
