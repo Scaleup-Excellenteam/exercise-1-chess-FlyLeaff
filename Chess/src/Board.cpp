@@ -8,8 +8,14 @@
 #include <Queen.h>
 #include <Knight.h>
 #include <Pawn.h>
-// Include other piece headers as needed
 
+
+
+
+/**
+* @brief Update the enpassant moves by decrementing the counter and removing the move if it has expired
+* 
+*/
 void Board::updateEnPassantMoves()
 {
     for (int i = enPassantMoves.size() - 1; i >= 0; --i)
@@ -21,6 +27,14 @@ void Board::updateEnPassantMoves()
     }
 }
 
+/**
+* @brief Check if the move is an enpassant move
+* @param srcRow Source row
+* @param srcCol Source column
+* @param destRow Destination row
+* @param destCol Destination column
+* @return true if the move is an enpassant move, false otherwise
+*/
 bool Board::isEnpassant(int srcRow, int srcCol, int destRow, int destCol) const
 {
     int direction = board[srcRow][srcCol]->getColor() == 'W' ? -1 : 1;
@@ -49,8 +63,8 @@ Board::Board()
 
 }
 
-Board::Board(const Board& other) {
-    // Allocate new memory for the 2D vector of pieces
+Board::Board(const Board& other) 
+{
     board = std::vector<std::vector<std::unique_ptr<Piece>>>(other.board.size());
     for (int i = 0; i < other.board.size(); ++i) {
         // Resize each inner vector and copy pieces using new pointers
@@ -71,6 +85,13 @@ Board::Board(const Board& other) {
 
 }
 
+/**
+* @brief Initialize the board with the given board string
+* @param boardString String representation of the board
+* 
+* i used the same format of boardString as the one in the chess.cpp file
+* so this simply allows me to initialize both with the same string
+*/
 void Board::initializeBoard(const std::string& boardString)
 {
     if (boardString.size() != 64)
@@ -83,46 +104,46 @@ void Board::initializeBoard(const std::string& boardString)
             char pieceChar = boardString[row * 8 + col];
             switch (pieceChar)
             {
-            case empty:
+            case EMPTY_SPACE:
                 board[row][col] = nullptr;
                 break;
-            case whiteRook:
-                board[row][col] = std::make_unique<Rook>(white);
+            case WHITE_ROOK:
+                board[row][col] = std::make_unique<Rook>(WHITE);
                 break;
-            case blackRook:
-                board[row][col] = std::make_unique<Rook>(black);
+            case BLACK_ROOK:
+                board[row][col] = std::make_unique<Rook>(BLACK);
                 break;
-            case whiteKing:
-                board[row][col] = std::make_unique<King>(white);
+            case WHITE_KING:
+                board[row][col] = std::make_unique<King>(WHITE);
                 setWhiteKingPos(row, col);
                 break;
-            case blackKing:
-                board[row][col] = std::make_unique<King>(black);
+            case BLACK_KING:
+                board[row][col] = std::make_unique<King>(BLACK);
                 setBlackKingPos(row, col);
                 break;
-            case whiteBishop:
-                board[row][col] = std::make_unique<Bishop>(white);
+            case WHITE_BISHOP:
+                board[row][col] = std::make_unique<Bishop>(WHITE);
                 break;
-            case blackBishop:
-                 board[row][col] = std::make_unique<Bishop>(black);
+            case BLACK_BISHOP:
+                 board[row][col] = std::make_unique<Bishop>(BLACK);
                  break;
-            case whiteQueen:
-                board[row][col] = std::make_unique<Queen>(white);
+            case WHITE_QUEEN:
+                board[row][col] = std::make_unique<Queen>(WHITE);
                 break;
-			case blackQueen:
-                board[row][col] = std::make_unique<Queen>(black);
+			case BLACK_QUEEN:
+                board[row][col] = std::make_unique<Queen>(BLACK);
     			break;
-            case whiteKnight:
-                board[row][col] = std::make_unique<Knight>(white);
+            case WHITE_KNIGHT:
+                board[row][col] = std::make_unique<Knight>(WHITE);
                 break;
-            case blackKnight:
-                board[row][col] = std::make_unique<Knight>(black);
+            case BLACK_KNIGHT:
+                board[row][col] = std::make_unique<Knight>(BLACK);
                 break;
-            case whitePawn:
-                board[row][col] = std::make_unique<Pawn>(white);
+            case WHITE_PAWN:
+                board[row][col] = std::make_unique<Pawn>(WHITE);
                 break;
-            case blackPawn:
-                board[row][col] = std::make_unique<Pawn>(black);
+            case BLACK_PAWN:
+                board[row][col] = std::make_unique<Pawn>(BLACK);
 				break;
 
 
@@ -135,6 +156,9 @@ void Board::initializeBoard(const std::string& boardString)
     
 }
 
+/**
+* @brief Print the board for testing purposes
+* */
 void Board::printBoardTest() const
 {
     for (int row = 0; row < 8; ++row)
@@ -149,7 +173,9 @@ void Board::printBoardTest() const
         std::cout << std::endl;
     }
 }
-
+/**
+* @brief Get the piece at the given row and column
+*/
 Piece* Board::getPiece(int row, int col) const
 {
     if (!isWithinBounds(row, col))
@@ -158,18 +184,35 @@ Piece* Board::getPiece(int row, int col) const
     return board[row][col].get();
 
 }
+
+/**
+* @brief Set the piece at the given row and column
+* @param row Row index
+* @param col Column index
+* @param piece Piece to set
+* @return true if the piece was set successfully, false otherwise
+*/
 bool Board::setPiece(int row, int col, std::unique_ptr<Piece> piece)
 {
 	if (!isWithinBounds(row, col))
 		return false;
 	board[row][col] = std::move(piece);
-    return true;
+    return board[row][col] != nullptr;
 }
 
+
+/**
+* @brief Move a piece from the source to the destination
+* @param srcRow Source row
+* @param srcCol Source column
+*   @param destRow Destination row
+* @param destCol Destination column
+* @return true if the move was successful, false otherwise
+* */
 bool Board::movePiece(int srcRow, int srcCol, int destRow, int destCol)
 {
 
-    // this function simply moves the piece from src to dest, it doesnt check if the move is valid
+    /// this function simply moves the piece from src to dest, it doesnt check if the move is valid
     if (!isWithinBounds(srcRow, srcCol) || !isWithinBounds(destRow, destCol))   
 		return false;
 	
@@ -178,26 +221,26 @@ bool Board::movePiece(int srcRow, int srcCol, int destRow, int destCol)
     if (!piece)
         return false;
     char symbol = piece->getSymbol();
-    if(symbol == whiteKing)
+    if(symbol == WHITE_KING)
 		setWhiteKingPos(destRow, destCol);
-    if(symbol == blackKing)
+    if(symbol == BLACK_KING)
 		setBlackKingPos(destRow, destCol);
 
-    if (symbol == whitePawn || symbol == blackPawn) //TODO optimize this
+    if (symbol == WHITE_PAWN || symbol == BLACK_PAWN) ///TODO optimize this
     {
         int direction = symbol == 'W' ? -1 : 1;
-        if (symbol == whitePawn && destRow == 0)
-        {//TODO handle promotion 
+        if (symbol == WHITE_PAWN && destRow == 0)
+        {///TODO handle promotion 
         }
-        if (symbol == blackPawn && destRow == 7)
-        {//TODO handle promotion 
-            // on a second look, there is no implementation for promotion in the chess.cpp file provided, so this is not needed
-            // ill leave this here for now just in case
+        if (symbol == BLACK_PAWN && destRow == 7)
+        {///TODO handle promotion 
+            /// on a second look, there is no implementation for promotion in the chess.cpp file provided, so this is not needed
+            /// ill leave this here for now just in case
         }
-        if (symbol == whitePawn && srcRow == 1 && destRow == 3)
+        if (symbol == WHITE_PAWN && srcRow == 1 && destRow == 3)
             enPassantMoves.push_back(std::make_pair(std::make_pair(destRow + direction, destCol), 1));
 
-        if (symbol == blackPawn && srcRow == 6 && destRow == 4)
+        if (symbol == BLACK_PAWN && srcRow == 6 && destRow == 4)
             enPassantMoves.push_back(std::make_pair(std::make_pair(destRow + direction, destCol), 1));
 
         if (isEnpassant(srcRow, srcCol, destRow, destCol))
@@ -207,9 +250,9 @@ bool Board::movePiece(int srcRow, int srcCol, int destRow, int destCol)
     if (destPiece)
     {
 		char destSymbol = destPiece->getSymbol();
-		if (destSymbol == whiteKing)
+		if (destSymbol == WHITE_KING)
 			setWhiteKingPos(-1, -1);
-		if (destSymbol == blackKing)
+		if (destSymbol == BLACK_KING)
 			setBlackKingPos(-1, -1);
 	}
     board[destRow][destCol] = std::move(board[srcRow][srcCol]);
@@ -218,13 +261,34 @@ bool Board::movePiece(int srcRow, int srcCol, int destRow, int destCol)
     return true;
 }
 
+
+/**
+* @brief Simulate a move on the board
+* @param srcRow Source row
+* @param srcCol Source column
+* @param destRow Destination row
+* @param destCol Destination column
+* @return A new board with the move simulated
+* 
+* used to check if a move will cause check without actually moving the piece
+*/
 Board* Board::simulateMove(int srcRow, int srcCol, int destRow, int destCol) const
 {
-    Board* boardCopy = new Board(*this); // Copy the current board (deep copy of pieces
+    Board* boardCopy = new Board(*this); /// Copy the current board (deep copy of pieces
     boardCopy->movePiece(srcRow, srcCol, destRow, destCol);
     return boardCopy;
 }
 
+/**
+* @brief Check if the move is valid
+* 
+* @param srcRow Source row
+* @param srcCol Source column
+* @param destRow Destination row
+* @param destCol Destination column
+* @return true if the move is valid, false otherwise
+* 
+*/
 bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
 {
     if (!isWithinBounds(srcRow, srcCol) || !isWithinBounds(destRow, destCol))
@@ -241,7 +305,7 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
     {
         if (move.first == destRow && move.second == destCol)
         {
-            // Check for path blocking for sliding pieces: Rook, Bishop, and Queen
+            /// Check for path blocking for sliding pieces: Rook, Bishop, and Queen
             if (isSlidingPiece(srcSymbol))
             {
                 int rowStep = (destRow - srcRow) ? (destRow - srcRow) / abs(destRow - srcRow) : 0;
@@ -261,19 +325,20 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
                 char destColor = destPiece->getColor();
 
                 if(srcColor == destColor)
-					return false;   // self capture
+					return false;   /// self capture
 
             }
 
-            // Handle pawn captures
-            if (srcSymbol == whitePawn || srcSymbol == blackPawn)
+            /// Handle pawn captures
+            if (srcSymbol == WHITE_PAWN || srcSymbol == BLACK_PAWN)
             {
                 if(destPiece && destCol==srcCol)
-					return false; // Pawns cant eat forward
-                if (isEnpassant(srcRow, srcCol, destRow, destCol))
-                    return true; 
+					return false; /// Pawns cant eat forward
+                //if (isEnpassant(srcRow, srcCol, destRow, destCol)) /// EnPassant captures
+                    // Enpassant capture apparently not supported via chess.cpp
+                  //  return true; 
                 if (destCol != srcCol && !destPiece)
-                    return false; // Pawns can only move diagonally if capturing
+                    return false; /// Pawns can only move diagonally if capturing
 
             }
 
@@ -292,9 +357,17 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
 
     return false;
 }
+
+/**
+* @brief Check if the king can castle
+* @param srcSymbol Symbol of the king
+* @param destRow Destination row
+* @param destCol Destination column
+* @return true if the king can castle, false otherwise
+*/
 bool Board::canCastle(char srcSymbol, int destRow, int destCol) const
 {
-    int row = (srcSymbol == whiteKing) ? 0 : 7;
+    int row = (srcSymbol == WHITE_KING) ? 0 : 7;
     int kingsideRookCol = 7;
     int queensideRookCol = 0;
 
@@ -332,13 +405,21 @@ bool Board::canCastle(char srcSymbol, int destRow, int destCol) const
     return false;
 }
 
+/**
+* @brief Check if the piece is a sliding piece
+* @param srcSymbol Symbol of the piece
+* @return true if the piece is a sliding piece, false otherwise
+* 
+* Sliding pieces are Rook, Bishop, and Queen
 
+*/
 bool Board::isSlidingPiece(char srcSymbol) const
 {
-    return srcSymbol == whiteRook || srcSymbol == blackRook || srcSymbol == whiteBishop ||
-             srcSymbol == blackBishop || srcSymbol == whiteQueen || srcSymbol == blackQueen;
+    return srcSymbol == WHITE_ROOK || srcSymbol == BLACK_ROOK || srcSymbol == WHITE_BISHOP ||
+             srcSymbol == BLACK_BISHOP || srcSymbol == WHITE_QUEEN || srcSymbol == BLACK_QUEEN;
 }
 
+// Overload the subscript operator for non const access
 
 std::vector<std::unique_ptr<Piece>>& Board::operator[](int row)
 {

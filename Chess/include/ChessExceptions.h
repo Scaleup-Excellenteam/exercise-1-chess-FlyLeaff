@@ -4,9 +4,12 @@
 #include <stdexcept>
 #include <string>
 
+/**
+this class is a base class for all chess exceptions, it simply holds an error code as well as the error msg
+the error msgs are the same as in the assignment file 
+*/
 class ChessException : public std::runtime_error {
-    // this class is a base class for all chess exceptions, it simply holds an error code as well as the error msg
-    // the error msgs are the same as in the assignment file 
+
 private:
     int errorCode;
 public:
@@ -59,7 +62,8 @@ public:
 class GameOverException : public ChessException {
 public:
     GameOverException() : ChessException(0, "Game Over!") {}
-    GameOverException(const std::string& message) : ChessException(0, message) {}
+    // added msg string here to pass who won the game
+    GameOverException(const std::string& message) : ChessException(0, message) {} 
 };
 
 #endif // CHESS_EXCEPTIONS_H

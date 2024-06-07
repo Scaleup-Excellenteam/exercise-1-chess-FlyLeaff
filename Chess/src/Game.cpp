@@ -1,6 +1,8 @@
 #include "Game.h"
 #include <iostream>
 #include <King.h>
+
+
 Game::Game() : whiteTurn(true)
 {
 	board.setWhiteKingPos(0, 4);
@@ -15,19 +17,32 @@ void Game::initialize(const std::string& boardString)
     board.initializeBoard(boardString);
 }
 
+/**
+ * @brief Switch the turn of the player
+ */
 void Game::switchTurn()
 {
     whiteTurn = !whiteTurn;
     board.updateEnPassantMoves();
 }
 
+/**
+ * @brief Move a piece on the board
+ * * @param srcRow Source row
+ * * @param srcCol Source column
+ * * @param destRow Destination row
+ * * @param destCol Destination column
+ * * @return true if the move was successful, false otherwise
+ */
+
 bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
 {
     if (board.movePiece(srcRow, srcCol, destRow, destCol))
     {
-        if (board[destRow][destCol]->getSymbol() == whiteKing)
+        if (board[destRow][destCol]->getSymbol() == WHITE_KING)
         {   // keep track of kings position for check checks
             board.setWhiteKingPos(destRow, destCol);
+            // below here is for castling, which isnt supported via chess.cpp
             if (King* king = dynamic_cast<King*>(board[destRow][destCol].get())) 
                 king->wasMoved = true;
             
@@ -42,7 +57,7 @@ bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
                 didWhiteCastleLastTurn = true;
 			}
         }
-        else if (board[destRow][destCol]->getSymbol() == blackKing)
+        else if (board[destRow][destCol]->getSymbol() == BLACK_KING)
         {
             board.setBlackKingPos(destRow, destCol);
             if (King* king = dynamic_cast<King*>(board[destRow][destCol].get()))           
@@ -69,6 +84,15 @@ bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
     return false;
 }
 
+/**
+ * @brief Check if a move is legal
+ * * @param srcRow Source row
+ * * @param srcCol Source column
+ * * @param destRow Destination row
+ * * @param destCol Destination column
+ * * @return true if the move is legal, false otherwise
+ * it also throws exceptions if the move is illegal which is how we know which one in main
+ */
 bool Game::isLegalMove(int srcRow, int srcCol, int destRow, int destCol) const
 {
     if (!isWithinBounds(srcRow, srcCol) || !isWithinBounds(destRow, destCol))
@@ -108,12 +132,24 @@ bool Game::isLegalMove(int srcRow, int srcCol, int destRow, int destCol) const
 
     return true;
 }
+/**
+ * @brief Check if a move causes self check
+ * * @param srcRow Source row
+ * * @param srcCol Source column
+ * * @param destRow Destination row
+ * * @param destCol Destination column
+ * * @return true if the move causes self check, false otherwise
+ * 
+ * it simulates the move and checks if the player is in check after the move
+ */
 bool Game::doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destCol) const
 {
-   
-
     return innerIsCheck(*board.simulateMove(srcRow, srcCol, destRow, destCol), board[srcRow][srcCol]->getColor());
 }
+
+
+
+
 std::string Game::lastCastleMove() const
 {
     if (didWhiteCastleLastTurn)
@@ -128,10 +164,18 @@ std::string Game::lastCastleMove() const
 			return "h8h2";
     return "didnt Castle";
 }
+
+/**
+ * @brief Check if a player is in check via certain board state
+ * * @param color Color of the player
+ * * @return true if the player is in check, false otherwise
+ * 
+ * it takes a board as an argument to assist in the simulation of moves
+ */
 bool Game::innerIsCheck(Board& tempBoard,char color) const
 {
-    auto kingPos = (color == white) ? tempBoard.getWhiteKingPos() : tempBoard.getBlackKingPos();
-    char opponentColor = (color == white) ? black : white;
+    auto kingPos = (color == WHITE) ? tempBoard.getWhiteKingPos() : tempBoard.getBlackKingPos();
+    char opponentColor = (color == WHITE) ? BLACK : WHITE;
 
     for (int row = 0; row < 8; ++row)
     {
@@ -157,13 +201,21 @@ bool Game::innerIsCheck(Board& tempBoard,char color) const
 
 
 
-
+/**
+ * @brief Check if a player is in check
+ * * @param color Color of the player
+ * * @return true if the player is in check, false otherwise
+ */
 bool Game::isCheck(char color) const
 {
    return innerIsCheck(board, color);
 }
 
-
+/**
+ * @brief Check if the game is over
+ * * @return true if the game is over, false otherwise
+ * king positions will be set to -1,-1 after a king is captured
+ */
 bool Game::isGameOver() const
 {
     if (board.getBlackKingPos().first == -1)
@@ -180,16 +232,20 @@ bool Game::isWhitePiece(char pieceSymbol) const
 
 char Game::getCurrentPlayerColor() const
 {
-    return isWhiteTurn() ? white : black;
+    return isWhiteTurn() ? WHITE : BLACK;
 }
 
 char Game::getOpponentColor() const
 {
-    return isWhiteTurn() ? black : white;
+    return isWhiteTurn() ? BLACK : WHITE;
 }
 
 
-// Static function to parse chess notation
+/**
+ * @brief Parse a move in chess notation
+ * * @param move Move in chess notation
+ * * @return Pair of source and destination positions
+ */
 std::pair<std::pair<int, int>, std::pair<int, int>> Game::parseMove(const std::string& move)
 {
     if (move.size() != 4)

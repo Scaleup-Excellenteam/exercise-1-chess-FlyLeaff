@@ -1,6 +1,10 @@
 #include "MovementStrats.h"
 #include "ConstUtils.h"
 
+/**
+* i wont go into detail for every one of those as they simply return that piece's
+possible moves disregarding the boards state
+*/
 std::vector<std::pair<int, int>> HorizontalVerticalMovement::getValidMoves(int srcRow, int srcCol) const
 {
     std::vector<std::pair<int, int>> moves;

@@ -11,8 +11,11 @@ class Board
 {
 private:
     std::vector<std::vector<std::unique_ptr<Piece>>> board;
+    // board is represented as a 2D vector of unique pointers to pieces which are polymorphic
     std::pair<int, int> whiteKingPos;
     std::pair<int, int> blackKingPos;
+
+    bool isSlidingPiece(char srcSymbol) const;
 
 
 
@@ -22,7 +25,7 @@ public:
     Board();
     Board(const Board& other);
     void initializeBoard(const std::string& boardString);
-    void printBoardTest() const;
+    //void printBoardTest() const;
     Piece* getPiece(int row, int col) const;
     bool setPiece(int row, int col, std::unique_ptr<Piece> piece);
 
@@ -32,7 +35,6 @@ public:
 
     bool canCastle(char srcSymbol, int destRow, int destCol) const;
 
-    bool isSlidingPiece(char srcSymbol) const;
 
     void updateEnPassantMoves();
 

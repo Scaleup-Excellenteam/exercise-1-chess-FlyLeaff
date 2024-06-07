@@ -6,6 +6,12 @@
 #include <utility>
 #include <memory>
 
+
+/**
+* This class is a base class for all movement strategies, it has a method that returns a vector of pairs of ints
+* and a method that returns a clone of the object for the piece class to use in the copy constructor
+* as this is a pure virtual class, it cannot be instantiated
+*/
 class MovementStrategy
 {
 public:
