@@ -25,7 +25,7 @@ public:
     Board();
     Board(const Board& other);
     void initializeBoard(const std::string& boardString);
-    //void printBoardTest() const;
+    void printBoardTest() const;
     Piece* getPiece(int row, int col) const;
     bool setPiece(int row, int col, std::unique_ptr<Piece> piece);
 
