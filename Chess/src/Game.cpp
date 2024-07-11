@@ -42,7 +42,6 @@ bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
         if (board[destRow][destCol]->getSymbol() == WHITE_KING)
         {   // keep track of kings position for check checks
             board.setWhiteKingPos(destRow, destCol);
-            // below here is for castling, which isnt supported via chess.cpp
             if (King* king = dynamic_cast<King*>(board[destRow][destCol].get())) 
                 king->wasMoved = true;
             

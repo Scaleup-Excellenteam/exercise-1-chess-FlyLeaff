@@ -153,52 +153,108 @@ void Chess::excute()
 	setPieces(); 
 }
 // check the response code and switch turn if needed 
+
+void Chess::executeCastling()
+{
+	int row = (m_input[0] - 'a');
+	int col = (m_input[1] - '1');
+	char pieceInSource = m_boardString[(row * 8) + col];
+	m_boardString[(row * 8) + col] = '#';
+
+	row = (m_input[2] - 'a');
+	col = (m_input[3] - '1');
+	m_boardString[(row * 8) + col] = pieceInSource;
+
+	setPieces();
+
+}
+void Chess::executeEnPassant()
+{
+
+
+	int srcRow = (m_input[1] - '1');
+	int srcCol = (m_input[0] - 'a');
+	int dstRow = (m_input[3] - '1');
+	int dstCol = (m_input[2] - 'a');
+
+	// Move the pawn
+	char pieceInSource = m_boardString[(srcRow * 8) + srcCol];
+	m_boardString[(srcRow * 8) + srcCol] = '#';
+	m_boardString[(dstRow * 8) + dstCol] = pieceInSource;
+
+	// Remove the captured pawn
+	int capturedRow = srcRow; // In en passant, the captured pawn is on the same row as the source
+	int capturedCol = dstCol; // and the same column as the destination
+	m_boardString[(capturedRow * 8) + capturedCol] = '#';
+
+	setPieces();
+}
+
 void Chess::doTurn()
 {
-	m_errorMsg = "\n"; 
+	m_errorMsg = "\n";
 	switch (m_codeResponse)
 	{
-	case 11:
-	{
-		m_msg = "there is not piece at the source \n";
-		break;
-	}
-	case 12:
-	{
-		m_msg = "the piece in the source is piece of your opponent \n";
-		break;
-	}
-	case 13:
-	{
-		m_msg = "there one of your pieces at the destination \n";
-		break;
-	}
-	case 21:
-	{
-		m_msg = "illegal movement of that piece \n";
-		break;
-	}
-	case 31:
-	{
-		m_msg = "this movement will cause you checkmate \n";
-		break;
-	}
-	case 41:
-	{
-		excute();
-		m_turn = !m_turn;
-		m_msg = "the last movement was legal and cause check \n";
-		break;
-	}
-	case 42:
-	{
-		excute();
-		m_turn = !m_turn;
-		m_msg = "the last movement was legal \n";
-		break;
-	}
+		case 11:
+		{
+			m_msg = "there is not piece at the source \n";
+			break;
+		}
+		case 12:
+		{
+			m_msg = "the piece in the source is piece of your opponent \n";
+			break;
+		}
+		case 13:
+		{
+			m_msg = "there one of your pieces at the destination \n";
+			break;
+		}
+		case 21:
+		{
+			m_msg = "illegal movement of that piece \n";
+			break;
+		}
+		case 31:
+		{
+			m_msg = "this movement will cause you checkmate \n";
+			break;
+		}
+		case 41:
+		{
+			excute();
+			m_turn = !m_turn;
+			m_msg = "the last movement was legal and cause check \n";
+			break;
+		}
+		case 42:
+		{
+			excute();
+			m_turn = !m_turn;
+			m_msg = "the last movement was legal \n";
+			break;
+		}
+		case 43:
+		{
+			executeCastling();
+			m_turn = !m_turn;
+			m_msg = "the last movement was legal - Castling \n";
+			break;
+
+		}
+		case 44:
+		{ //TODO checkmate
+			break;
+		}
+		case 45: //TODO en'passant
+		{
+			executeEnPassant();
+			m_turn = !m_turn;
+			break;
+		}
 	}
 }
+
 
 // C'tor
 Chess::Chess(const string& start)
@@ -252,6 +308,8 @@ void Chess::setCodeResponse(int codeResponse)
 {
 	if (((11 <= codeResponse) && (codeResponse <= 13)) ||
 		((21 == codeResponse) || (codeResponse == 31)) ||
-		((41 == codeResponse) || (codeResponse == 42)))
+		((41 == codeResponse) || (codeResponse == 42)) ||
+		((codeResponse == 43) || (codeResponse == 44)) ||
+		codeResponse == 45)
 		m_codeResponse = codeResponse;
 }

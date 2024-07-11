@@ -5,7 +5,7 @@
 
 int main()
 {
-    string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
+    string board = "R###K##RPPPPPPPP################################ppppppppr###k##r"; 
     //std::string board = "########R###K##############################r###k########"
 
     //std::string board = std::string( // for testing purposes
@@ -66,11 +66,9 @@ int main()
                 if (game.isCheck(game.getCurrentPlayerColor()))
                     codeResponse = MoveChecksOpponentException().getErrorCode(); // Move is legal and causes check
 
-                //if (game.lastCastleMove() != "didnt Castle")
-                //    a.execute(game.lastCastleMove());
-                // Castling, pawn promotion and en passant are implemented
-                // but are commented out for now as chess.cpp does not support these moves and
-                // i was instructed to not change the chess.cpp file
+                if (game.lastCastleMove() != "didnt Castle")
+                    codeResponse = CastlingException().getErrorCode();
+
 
                 game.isGameOver();
 

@@ -66,4 +66,18 @@ public:
     GameOverException(const std::string& message) : ChessException(0, message) {} 
 };
 
+class CheckmateException : public ChessException {
+public:
+	CheckmateException() : ChessException(0, "Checkmate") {}
+	// added msg string here to pass who won the game
+	CheckmateException(const std::string& message) : ChessException(0, message) {} 
+};
+class CastlingException : public ChessException {
+public:
+	CastlingException() : ChessException(43, "Castling move is legal") {}
+};
+class EnPassantException : public ChessException {
+public:
+	EnPassantException() : ChessException(45, "En passant move is legal") {}
+};
 #endif // CHESS_EXCEPTIONS_H

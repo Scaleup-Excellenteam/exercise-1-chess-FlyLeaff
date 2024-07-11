@@ -334,9 +334,8 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
             {
                 if(destPiece && destCol==srcCol)
 					return false; /// Pawns cant eat forward
-                //if (isEnpassant(srcRow, srcCol, destRow, destCol)) /// EnPassant captures
-                    // Enpassant capture apparently not supported via chess.cpp
-                  //  return true; 
+                if (isEnpassant(srcRow, srcCol, destRow, destCol)) /// EnPassant captures
+                    return true; 
                 if (destCol != srcCol && !destPiece)
                     return false; /// Pawns can only move diagonally if capturing
 
@@ -347,12 +346,11 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
     }
    
 
- //   if (srcSymbol == whiteKing || srcSymbol == blackKing)
- //   {
-	//	if (canCastle(srcSymbol, destRow, destCol))
-	//		return true;
-	//}
-    // chess.cpp doesnt support castling so i cannot utilize this
+    if (srcSymbol == WHITE_KING || srcSymbol == BLACK_KING)
+    {
+		if (canCastle(srcSymbol, destRow, destCol))
+			return true;
+	}
  
 
     return false;
