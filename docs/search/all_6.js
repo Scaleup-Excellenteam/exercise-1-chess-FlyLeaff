@@ -8,7 +8,9 @@ var searchData=
   ['getblackkingpos_5',['getBlackKingPos',['../class_board.html#a8e077291341792ff42ef460956a9bf4b',1,'Board']]],
   ['getcolor_6',['getColor',['../class_piece.html#a2c2f10d05d6d7771fa6abc2b24b0178e',1,'Piece']]],
   ['getcurrentplayercolor_7',['getCurrentPlayerColor',['../class_game.html#a0c7132e16ae7a6fec5f68e11299bdeea',1,'Game']]],
-  ['geterrorcode_8',['getErrorCode',['../class_chess_exception.html#a4a81ba46c10391320472c03ce53ff7e7',1,'ChessException']]],
+  ['
+
+_8',['getResponseCode',['../class_chess_exception.html#a4a81ba46c10391320472c03ce53ff7e7',1,'ChessException']]],
   ['getinput_9',['getInput',['../class_chess.html#a1ca5c30c1051f3cc543346a3c816d2e5',1,'Chess']]],
   ['getpiece_10',['getPiece',['../class_board.html#ab9cac59a88ba9b6c5286e0106c47a184',1,'Board']]],
   ['getsymbol_11',['getSymbol',['../class_piece.html#a0a7d22fbbd6c64babe37bc7e58dbb6e7',1,'Piece']]],

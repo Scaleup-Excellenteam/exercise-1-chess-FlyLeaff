@@ -37,13 +37,14 @@ void Board::updateEnPassantMoves()
 */
 bool Board::isEnpassant(int srcRow, int srcCol, int destRow, int destCol) const
 {
-    int direction = board[srcRow][srcCol]->getColor() == 'W' ? -1 : 1;
+    if (!board[srcRow][srcCol]) return false;
+    int direction = board[srcRow][srcCol]->getColor() == WHITE ? -1 : 1;
 
     for (auto enpasantMove : enPassantMoves)
     {
         if (enpasantMove.first.first == destRow && enpasantMove.first.second == destCol)
         {
-            if (srcRow + direction == destRow && abs(srcCol - destCol) == 1)
+            if (srcRow - direction == destRow && abs(srcCol - destCol) == 1)
             {
                 return true;
             }
@@ -228,7 +229,7 @@ bool Board::movePiece(int srcRow, int srcCol, int destRow, int destCol)
 
     if (symbol == WHITE_PAWN || symbol == BLACK_PAWN) ///TODO optimize this
     {
-        int direction = symbol == 'W' ? -1 : 1;
+        int direction = symbol == WHITE ? -1 : 1;
         if (symbol == WHITE_PAWN && destRow == 0)
         {///TODO handle promotion 
         }
@@ -289,14 +290,14 @@ Board* Board::simulateMove(int srcRow, int srcCol, int destRow, int destCol) con
 * @return true if the move is valid, false otherwise
 * 
 */
-bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
+int Board::getMoveResponseCode(int srcRow, int srcCol, int destRow, int destCol) const
 {
     if (!isWithinBounds(srcRow, srcCol) || !isWithinBounds(destRow, destCol))
-        return false;
+        return 14;
 
     Piece* srcPiece = getPiece(srcRow, srcCol);
     if (!srcPiece)
-        return false;
+        return 11;
     char srcColor = srcPiece->getColor();
     char srcSymbol = srcPiece->getSymbol();
 
@@ -314,7 +315,7 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
                 for (int r = srcRow + rowStep, c = srcCol + colStep; r != destRow || c != destCol; r += rowStep, c += colStep)
                 {
                     if (board[r][c])
-                        return false;
+                        return 21;
                 }
             }
             
@@ -325,7 +326,7 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
                 char destColor = destPiece->getColor();
 
                 if(srcColor == destColor)
-					return false;   /// self capture
+					return 13;   /// self capture
 
             }
 
@@ -333,11 +334,11 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
             if (srcSymbol == WHITE_PAWN || srcSymbol == BLACK_PAWN)
             {
                 if(destPiece && destCol==srcCol)
-					return false; /// Pawns cant eat forward
+					return 21; /// Pawns cant eat forward
                 if (isEnpassant(srcRow, srcCol, destRow, destCol)) /// EnPassant captures
-                    return true; 
+                    return 45; 
                 if (destCol != srcCol && !destPiece)
-                    return false; /// Pawns can only move diagonally if capturing
+                    return 21; /// Pawns can only move diagonally if capturing
 
             }
 
@@ -349,12 +350,14 @@ bool Board::isValidMove(int srcRow, int srcCol, int destRow, int destCol) const
     if (srcSymbol == WHITE_KING || srcSymbol == BLACK_KING)
     {
 		if (canCastle(srcSymbol, destRow, destCol))
-			return true;
+			return 43;
 	}
  
 
-    return false;
+    return 21;
 }
+
+
 
 /**
 * @brief Check if the king can castle

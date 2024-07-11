@@ -26,9 +26,10 @@ private:
 public:
     Game();
     void initialize(const std::string& boardString);
-    bool movePiece(int srcRow, int srcCol, int destRow, int destCol);
+    int movePiece(int srcRow, int srcCol, int destRow, int destCol);
     bool isGameOver() const;
-    bool isLegalMove(int srcRow, int srcCol, int destRow, int destCol) const;
+    int getMoveResponseCode(int srcRow, int srcCol, int destRow, int destCol) const;
+    bool isMoveLegal(int responseCode) const;
 
     std::string lastCastleMove() const;
 

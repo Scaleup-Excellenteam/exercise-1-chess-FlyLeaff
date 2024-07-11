@@ -35,8 +35,11 @@ void Game::switchTurn()
  * * @return true if the move was successful, false otherwise
  */
 
-bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
+int Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
 {
+    bool enp = false;
+    if (board.isEnpassant(srcRow, srcCol, destRow, destCol))
+        enp = true;
     if (board.movePiece(srcRow, srcCol, destRow, destCol))
     {
         if (board[destRow][destCol]->getSymbol() == WHITE_KING)
@@ -49,11 +52,15 @@ bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
             {
 				board.movePiece(0, 7, 0, 5);
                 didWhiteCastleLastTurn = true;
+                return CastlingException().getResponseCode();
+
 			}
 			if (srcRow == 0 && srcCol == 4 && destRow == 0 && destCol == 2)
 			{
 				board.movePiece(0, 0, 0, 3);
                 didWhiteCastleLastTurn = true;
+                return CastlingException().getResponseCode();
+
 			}
         }
         else if (board[destRow][destCol]->getSymbol() == BLACK_KING)
@@ -65,11 +72,13 @@ bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
             {
                 board.movePiece(7, 7, 7, 5);
                 didBlackCastleLastTurn = true;
+                return CastlingException().getResponseCode();
             }
             if (srcRow == 7 && srcCol == 4 && destRow == 7 && destCol == 2)
             {
 				board.movePiece(7, 0, 7, 3);
                 didBlackCastleLastTurn = true;
+                return CastlingException().getResponseCode();
 			}
 		}
         else 
@@ -77,10 +86,16 @@ bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
             didBlackCastleLastTurn = false;
             didWhiteCastleLastTurn = false;
         }
+
+
         switchTurn();
-        return true;
+        if (enp != 0)
+            return EnPassantException().getResponseCode();
+        return 42;
+
+  
     }
-    return false;
+    return 21;
 }
 
 /**
@@ -92,29 +107,30 @@ bool Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
  * * @return true if the move is legal, false otherwise
  * it also throws exceptions if the move is illegal which is how we know which one in main
  */
-bool Game::isLegalMove(int srcRow, int srcCol, int destRow, int destCol) const
+int Game::getMoveResponseCode(int srcRow, int srcCol, int destRow, int destCol) const
 {
     if (!isWithinBounds(srcRow, srcCol) || !isWithinBounds(destRow, destCol))
-        throw OutOfBoundsException();
-	
+        return OutOfBoundsException().getResponseCode();
+
 
     Piece* srcPiece = board.getPiece(srcRow, srcCol);
     if (!srcPiece)
-        return false;
-    
+        return NoPieceAtSourceException().getResponseCode();
+
 
     char pieceSymbol = srcPiece->getSymbol();
     bool isSrcPieceWhite = (isWhitePiece(pieceSymbol));
 
     if ((whiteTurn && !isSrcPieceWhite) || (!whiteTurn && isSrcPieceWhite))
-        throw OpponentPieceAtSourceException();
-    
+        return OpponentPieceAtSourceException().getResponseCode();
 
-    if (!board.isValidMove(srcRow, srcCol, destRow, destCol))
-        throw IllegalMoveException();
+
+    int responseCode = board.getMoveResponseCode(srcRow, srcCol, destRow, destCol);
+    if(!isMoveLegal(responseCode))
+        return responseCode;
 
     if (doesMoveCauseSelfCheck(srcRow, srcCol, destRow, destCol))
-        throw MoveCausesSelfCheckException();
+        return MoveCausesSelfCheckException().getResponseCode();
 
 
     Piece* destPiece = board.getPiece(destRow, destCol);
@@ -125,12 +141,22 @@ bool Game::isLegalMove(int srcRow, int srcCol, int destRow, int destCol) const
 
         if ((whiteTurn && isDestPieceWhite) || (!whiteTurn && !isDestPieceWhite))
         {
-            throw OwnPieceAtDestinationException();
+            return OwnPieceAtDestinationException().getResponseCode();
         }
     }
 
-    return true;
+    return LegalMoveException().getResponseCode();
 }
+bool Game::isMoveLegal(int responseCode) const
+{
+    return !(responseCode == NoPieceAtSourceException().getResponseCode()
+          || responseCode == OpponentPieceAtSourceException().getResponseCode()
+          || responseCode == OwnPieceAtDestinationException().getResponseCode()
+          || responseCode == IllegalMoveException().getResponseCode()
+          || responseCode == OutOfBoundsException().getResponseCode());
+
+}
+
 /**
  * @brief Check if a move causes self check
  * * @param srcRow Source row
@@ -183,7 +209,7 @@ bool Game::innerIsCheck(Board& tempBoard,char color) const
             Piece* piece = tempBoard.getPiece(row, col);
             if (piece && (getCurrentPlayerColor() != piece->getColor()))
             {
-                if (tempBoard.isValidMove(row, col, kingPos.first, kingPos.second))
+                if (isMoveLegal(tempBoard.getMoveResponseCode(row, col, kingPos.first, kingPos.second)))
                 { 
                     if (King* king = dynamic_cast<King*>(board[kingPos.first][kingPos.second].get()))
                         king->wasChecked = true;

@@ -15,7 +15,7 @@ private:
 public:
     ChessException(int code, const std::string& message)
         : std::runtime_error(message), errorCode(code) {}
-    int getErrorCode() const { return errorCode; }
+    int getResponseCode() const { return errorCode; }
 };
 
 class NoPieceAtSourceException : public ChessException {

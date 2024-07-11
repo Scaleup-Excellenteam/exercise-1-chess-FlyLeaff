@@ -170,25 +170,24 @@ void Chess::executeCastling()
 }
 void Chess::executeEnPassant()
 {
-
-
-	int srcRow = (m_input[1] - '1');
-	int srcCol = (m_input[0] - 'a');
-	int dstRow = (m_input[3] - '1');
-	int dstCol = (m_input[2] - 'a');
+	int srcRow = (m_input[0] - 'a');
+	int srcCol = (m_input[1] - '1');
+	int dstRow = (m_input[2] - 'a');
+	int dstCol = (m_input[3] - '1');
 
 	// Move the pawn
 	char pieceInSource = m_boardString[(srcRow * 8) + srcCol];
 	m_boardString[(srcRow * 8) + srcCol] = '#';
 	m_boardString[(dstRow * 8) + dstCol] = pieceInSource;
 
-	// Remove the captured pawn
-	int capturedRow = srcRow; // In en passant, the captured pawn is on the same row as the source
-	int capturedCol = dstCol; // and the same column as the destination
+	int capturedRow = srcRow;
+	int capturedCol = dstCol;
+
 	m_boardString[(capturedRow * 8) + capturedCol] = '#';
 
 	setPieces();
 }
+
 
 void Chess::doTurn()
 {

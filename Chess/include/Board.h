@@ -20,7 +20,6 @@ private:
 
 
     std::vector<std::pair<std::pair<int, int>,int>> enPassantMoves; //a pair of the enpasant'able position, and an int to countdown the number of turns it has left(2 turns)
-    bool isEnpassant(int srcRow, int srcCol,int destRow,int destCol) const;
 public:
     Board();
     Board(const Board& other);
@@ -31,9 +30,11 @@ public:
 
     bool movePiece(int srcRow, int srcCol, int destRow, int destCol);
     Board* simulateMove(int srcRow, int srcCol, int destRow, int destCol) const;
-    bool isValidMove(int srcRow, int srcCol, int destRow, int destCol) const;
+    int getMoveResponseCode(int srcRow, int srcCol, int destRow, int destCol) const;
+
 
     bool canCastle(char srcSymbol, int destRow, int destCol) const;
+    bool isEnpassant(int srcRow, int srcCol, int destRow, int destCol) const;
 
 
     void updateEnPassantMoves();

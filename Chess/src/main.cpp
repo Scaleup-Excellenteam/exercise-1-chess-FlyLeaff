@@ -5,7 +5,7 @@
 
 int main()
 {
-    string board = "R###K##RPPPPPPPP################################ppppppppr###k##r"; 
+    string board = "R###K##RPPPPPPPP###################P############ppppppppr###k##r"; 
     //std::string board = "########R###K##############################r###k########"
 
     //std::string board = std::string( // for testing purposes
@@ -57,33 +57,32 @@ int main()
             int srcRow = srcPos.second;
             int destCol = destPos.first;
             int destRow = destPos.second;
-            if(game.isLegalMove(srcRow, srcCol, destRow, destCol))
-            {
-                
-                codeResponse = LegalMoveException().getErrorCode(); // Move is legal and does not cause check
 
-                game.movePiece(srcRow, srcCol, destRow, destCol);
+
+            codeResponse = game.getMoveResponseCode(srcRow, srcCol, destRow, destCol);
+            
+            if (game.isMoveLegal(codeResponse))
+            {
+
+                codeResponse = game.movePiece(srcRow, srcCol, destRow, destCol);
                 if (game.isCheck(game.getCurrentPlayerColor()))
-                    codeResponse = MoveChecksOpponentException().getErrorCode(); // Move is legal and causes check
+                    codeResponse = MoveChecksOpponentException().getResponseCode(); // Move is legal and causes check
 
                 if (game.lastCastleMove() != "didnt Castle")
-                    codeResponse = CastlingException().getErrorCode();
+                    codeResponse = CastlingException().getResponseCode();
 
 
                 game.isGameOver();
-
             }
-			else
-			{
-				codeResponse = IllegalMoveException().getErrorCode(); // Move is illegal
-			}
+
+           
 
         }
         catch (const ChessException& e) 
         {
 			std::cout << e.what() << std::endl;
-			codeResponse = e.getErrorCode();
-            if (e.getErrorCode() == 0)
+			codeResponse = e.getResponseCode();
+            if (e.getResponseCode() == 0)
                 break;
 		}
 
