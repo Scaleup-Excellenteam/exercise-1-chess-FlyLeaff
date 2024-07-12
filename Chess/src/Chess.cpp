@@ -251,7 +251,42 @@ void Chess::doTurn()
 			m_turn = !m_turn;
 			break;
 		}
+		case 46:
+		{
+
+			handlePromotion((m_input[2] - 'a'), (m_input[3] - '1'), m_promotionPiece);
+			m_turn = !m_turn;
+			m_msg = "the last movement was legal - Pawn promotion \n";
+			// pawn promotion
+			break;
+		}
 	}
+}
+
+char Chess::pawnPromotionUI()
+{
+	cout << "Pawn promotion: \n";
+	cout << "Please enter the piece you want to promote to: \n";
+	cout << "Q - Queen\n";
+	cout << "R - Rook\n";
+	cout << "B - Bishop\n";
+	cout << "N - Knight\n";
+	cout << "Enter your choice: ";
+
+	char piece;
+	cin >> piece;
+	m_promotionPiece = piece;
+	return piece;
+}
+
+void Chess::handlePromotion(int destRow, int destCol, char piece)
+{
+
+	piece = (m_turn) ? toupper(piece) : tolower(piece);
+	int dir = (m_turn) ? -1 : 1;
+	m_boardString[(destRow+dir)*8 + destCol] = '#';	
+	m_boardString[(destRow * 8) + destCol] = piece;
+	setPieces();
 }
 
 
@@ -309,6 +344,6 @@ void Chess::setCodeResponse(int codeResponse)
 		((21 == codeResponse) || (codeResponse == 31)) ||
 		((41 == codeResponse) || (codeResponse == 42)) ||
 		((codeResponse == 43) || (codeResponse == 44)) ||
-		codeResponse == 45)
+		((codeResponse == 45) || codeResponse == 46))
 		m_codeResponse = codeResponse;
 }

@@ -31,6 +31,7 @@ public:
     int getMoveResponseCode(int srcRow, int srcCol, int destRow, int destCol) const;
     bool isMoveLegal(int responseCode) const;
 
+    void promotePawn(int row, int col, char piece);
     std::string lastCastleMove() const;
 
     bool isCheck(char color) const;

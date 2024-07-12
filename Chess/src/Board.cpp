@@ -53,6 +53,28 @@ bool Board::isEnpassant(int srcRow, int srcCol, int destRow, int destCol) const
     return false;
 }
 
+void Board::promotePawn(int row, int col, char piece)
+{
+    switch (toupper(piece)) {
+    case 'Q':
+        board[row][col] = std::make_unique<Queen>(board[row][col]->getColor());
+        break;
+    case 'R':
+        board[row][col] = std::make_unique<Rook>(board[row][col]->getColor());
+        break;
+    case 'B':
+        board[row][col] = std::make_unique<Bishop>(board[row][col]->getColor());
+        break;
+    case 'N':
+        board[row][col] = std::make_unique<Knight>(board[row][col]->getColor());
+        break;
+    default:
+        board[row][col] = std::make_unique<Queen>(board[row][col]->getColor());
+        break;
+    }
+}
+
+
 Board::Board()
 {
     // Initialize the board with null pointers
@@ -230,14 +252,7 @@ bool Board::movePiece(int srcRow, int srcCol, int destRow, int destCol)
     if (symbol == WHITE_PAWN || symbol == BLACK_PAWN) ///TODO optimize this
     {
         int direction = symbol == WHITE ? -1 : 1;
-        if (symbol == WHITE_PAWN && destRow == 0)
-        {///TODO handle promotion 
-        }
-        if (symbol == BLACK_PAWN && destRow == 7)
-        {///TODO handle promotion 
-            /// on a second look, there is no implementation for promotion in the chess.cpp file provided, so this is not needed
-            /// ill leave this here for now just in case
-        }
+
         if (symbol == WHITE_PAWN && srcRow == 1 && destRow == 3)
             enPassantMoves.push_back(std::make_pair(std::make_pair(destRow + direction, destCol), 1));
 

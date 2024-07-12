@@ -61,17 +61,18 @@ public:
 };
 class GameOverException : public ChessException {
 public:
-    GameOverException() : ChessException(0, "Game Over!") {}
+    GameOverException() : ChessException(3, "Game Over!") {}
     // added msg string here to pass who won the game
     GameOverException(const std::string& message) : ChessException(0, message) {} 
 };
 
 class CheckmateException : public ChessException {
 public:
-	CheckmateException() : ChessException(0, "Checkmate") {}
+	CheckmateException() : ChessException(1, "Checkmate") {}
 	// added msg string here to pass who won the game
-	CheckmateException(const std::string& message) : ChessException(0, message) {} 
+	CheckmateException(const std::string& message) : ChessException(1, message) {} 
 };
+
 class CastlingException : public ChessException {
 public:
 	CastlingException() : ChessException(43, "Castling move is legal") {}
@@ -79,5 +80,9 @@ public:
 class EnPassantException : public ChessException {
 public:
 	EnPassantException() : ChessException(45, "En passant move is legal") {}
+};
+class PawnPromotionException : public ChessException {
+public:
+    PawnPromotionException() : ChessException(46, "Pawn promotion") {};
 };
 #endif // CHESS_EXCEPTIONS_H

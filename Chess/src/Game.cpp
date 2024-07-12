@@ -42,7 +42,8 @@ int Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
         enp = true;
     if (board.movePiece(srcRow, srcCol, destRow, destCol))
     {
-        if (board[destRow][destCol]->getSymbol() == WHITE_KING)
+        char symbol = board[destRow][destCol]->getSymbol();
+        if (symbol == WHITE_KING)
         {   // keep track of kings position for check checks
             board.setWhiteKingPos(destRow, destCol);
             if (King* king = dynamic_cast<King*>(board[destRow][destCol].get())) 
@@ -63,7 +64,7 @@ int Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
 
 			}
         }
-        else if (board[destRow][destCol]->getSymbol() == BLACK_KING)
+        else if (symbol == BLACK_KING)
         {
             board.setBlackKingPos(destRow, destCol);
             if (King* king = dynamic_cast<King*>(board[destRow][destCol].get()))           
@@ -81,11 +82,17 @@ int Game::movePiece(int srcRow, int srcCol, int destRow, int destCol)
                 return CastlingException().getResponseCode();
 			}
 		}
-        else 
+        else
         {
             didBlackCastleLastTurn = false;
             didWhiteCastleLastTurn = false;
         }
+        if ((symbol == WHITE_PAWN && destRow == 7) || (symbol == BLACK_PAWN && destRow == 0))
+        {
+            return PawnPromotionException().getResponseCode();
+        }
+
+
 
 
         switchTurn();
@@ -174,6 +181,11 @@ bool Game::doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destC
 
 
 
+
+void Game::promotePawn(int row, int col, char piece)
+{
+    board.promotePawn(row, col, piece);
+}
 
 std::string Game::lastCastleMove() const
 {

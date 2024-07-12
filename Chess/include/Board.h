@@ -35,7 +35,7 @@ public:
 
     bool canCastle(char srcSymbol, int destRow, int destCol) const;
     bool isEnpassant(int srcRow, int srcCol, int destRow, int destCol) const;
-
+    void promotePawn(int row, int col, char piece);
 
     void updateEnPassantMoves();
 

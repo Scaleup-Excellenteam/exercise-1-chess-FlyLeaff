@@ -5,7 +5,7 @@
 
 int main()
 {
-    string board = "R###K##RPPPPPPPP###################P############ppppppppr###k##r"; 
+    string board = "R##PK##RPPPPPPPP###################P############ppPpPppPr###k##r"; 
     //std::string board = "########R###K##############################r###k########"
 
     //std::string board = std::string( // for testing purposes
@@ -65,6 +65,11 @@ int main()
             {
 
                 codeResponse = game.movePiece(srcRow, srcCol, destRow, destCol);
+                if (codeResponse == PawnPromotionException().getResponseCode())
+				{
+                    char piece = a.pawnPromotionUI();
+					game.promotePawn(destRow, destCol, piece);
+				}
                 if (game.isCheck(game.getCurrentPlayerColor()))
                     codeResponse = MoveChecksOpponentException().getResponseCode(); // Move is legal and causes check
 
@@ -76,6 +81,7 @@ int main()
             }
 
            
+
 
         }
         catch (const ChessException& e) 

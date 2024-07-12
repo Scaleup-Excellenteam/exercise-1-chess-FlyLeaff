@@ -18,6 +18,7 @@ class Chess {
 	string m_msg = "\n";
 	string m_errorMsg = "\n";
 	int m_codeResponse;
+	char m_promotionPiece;
 
 	void clear() const;
 	void setFrames();
@@ -39,4 +40,7 @@ public:
 	Chess& operator=(const Chess&) = delete;
 	string getInput();
 	void setCodeResponse(int codeResponse);
+	char pawnPromotionUI();
+	void handlePromotion(int destRow, int destCol, char piece);
+
 };
