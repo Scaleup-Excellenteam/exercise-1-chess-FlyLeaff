@@ -5,7 +5,7 @@
 
 int main()
 {
-    string board = "R##PK##RPPPPPPPP###################P############ppPpPppPr###k##r"; 
+    string board = "R##PK##RPPPPPPPP###################P############Rppppppp####k###"; 
     //std::string board = "########R###K##############################r###k########"
 
     //std::string board = std::string( // for testing purposes
@@ -24,6 +24,7 @@ int main()
     Game game;
     game.initialize(board);
     int codeResponse = 0;
+    bool gameOver = false;
 
     std::string res = a.getInput();
     while (res != "exit")
@@ -70,14 +71,18 @@ int main()
                     char piece = a.pawnPromotionUI();
 					game.promotePawn(destRow, destCol, piece);
 				}
-                if (game.isCheck(game.getCurrentPlayerColor()))
-                    codeResponse = MoveChecksOpponentException().getResponseCode(); // Move is legal and causes check
+                
 
                 if (game.lastCastleMove() != "didnt Castle")
                     codeResponse = CastlingException().getResponseCode();
 
+                if (game.isCheck(game.getCurrentPlayerColor())) 
+                    codeResponse = MoveChecksOpponentException().getResponseCode(); // Move is legal and causes check
 
-                game.isGameOver();
+
+                gameOver = game.isGameOver();
+                if(gameOver)
+                    codeResponse = CheckmateException().getResponseCode();
             }
 
            
@@ -100,6 +105,8 @@ int main()
 
         a.setCodeResponse(codeResponse);
         res = a.getInput();
+        if(gameOver)
+			break;
 
     }
 

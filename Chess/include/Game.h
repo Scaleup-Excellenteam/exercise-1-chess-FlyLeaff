@@ -15,7 +15,6 @@ private:
     bool innerIsCheck(Board& tempBoard, char color) const;
     void switchTurn();
     bool doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destCol) const;
-    char getOpponentColor() const;
     bool isWhitePiece(char pieceSymbol) const;
 
     bool isWhiteTurn() const { return whiteTurn; }
@@ -31,12 +30,13 @@ public:
     int getMoveResponseCode(int srcRow, int srcCol, int destRow, int destCol) const;
     bool isMoveLegal(int responseCode) const;
 
+    char getOpponentColor() const;
+
     void promotePawn(int row, int col, char piece);
     std::string lastCastleMove() const;
 
     bool isCheck(char color) const;
-    //TODO: Implement checkmate
-
+    bool isCheckmate(char color) const;
     char getCurrentPlayerColor() const;
 
     // Static function to parse chess notation

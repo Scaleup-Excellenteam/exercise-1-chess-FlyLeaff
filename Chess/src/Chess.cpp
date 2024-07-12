@@ -241,11 +241,19 @@ void Chess::doTurn()
 			break;
 
 		}
-		case 44:
+		case 1:
 		{ //TODO checkmate
+			string whoWon = (m_turn) ?  "Player 1 (White - Capital letters) won" : "Player 2 (Black - Small letters) won" ;
+			m_msg = "Checkmate! Game Over! \n" + whoWon + "\n\nPress any input to exit!";
+			excute();
+			setPieces();
+			displayBoard();
+			std::string temp;
+			cin >> temp;
+			exit(0);
 			break;
 		}
-		case 45: //TODO en'passant
+		case 45: 
 		{
 			executeEnPassant();
 			m_turn = !m_turn;
@@ -344,6 +352,7 @@ void Chess::setCodeResponse(int codeResponse)
 		((21 == codeResponse) || (codeResponse == 31)) ||
 		((41 == codeResponse) || (codeResponse == 42)) ||
 		((codeResponse == 43) || (codeResponse == 44)) ||
-		((codeResponse == 45) || codeResponse == 46))
+		((codeResponse == 45) || (codeResponse == 46)) ||
+		((codeResponse == 3) || (codeResponse == 1)))
 		m_codeResponse = codeResponse;
 }

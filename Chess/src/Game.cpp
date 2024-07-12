@@ -255,10 +255,12 @@ bool Game::isCheck(char color) const
  */
 bool Game::isGameOver() const
 {
-    if (board.getBlackKingPos().first == -1)
-        throw GameOverException("Game over!. White won!");
-    if (board.getWhiteKingPos().first == -1)
-        throw GameOverException("Game over!. Black won!");
+
+    if (isCheckmate(getCurrentPlayerColor())) 
+         return true;
+    
+    
+
     return false;
 }
 
@@ -313,3 +315,37 @@ std::pair<std::pair<int, int>, std::pair<int, int>> Game::parseMove(const std::s
     return { srcPos, destPos };
 }
 
+
+
+bool Game::isCheckmate(char color) const
+{
+    if (!isCheck(color)) {
+        return false; // The king is not in check
+    }
+
+    // Iterate through all pieces of the current player
+    for (int row = 0; row < 8; ++row) {
+        for (int col = 0; col < 8; ++col) {
+            Piece* piece = board.getPiece(row, col);
+            if (piece && piece->getColor() == color) {
+                auto validMoves = piece->getValidMoves(row, col);
+                for (const auto& move : validMoves) {
+                    int destRow = move.first;
+                    int destCol = move.second;
+
+                    // Simulate the move
+                    std::unique_ptr<Board> simulatedBoard = std::make_unique<Board>(board);
+                    if(isMoveLegal(simulatedBoard->getMoveResponseCode(row, col, destRow, destCol)))
+                        simulatedBoard->movePiece(row, col, destRow, destCol);
+
+                    // Check if the move removes the check
+                    if (!innerIsCheck(*simulatedBoard, color)) {
+                        return false; // There is a legal move that removes the check
+                    }
+                }
+            }
+        }
+    }
+
+    return true; // No legal moves to remove the check
+}
