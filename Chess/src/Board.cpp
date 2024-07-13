@@ -8,7 +8,7 @@
 #include <Queen.h>
 #include <Knight.h>
 #include <Pawn.h>
-
+#include "ChessExceptions.h"
 
 
 
@@ -308,11 +308,11 @@ Board* Board::simulateMove(int srcRow, int srcCol, int destRow, int destCol) con
 int Board::getMoveResponseCode(int srcRow, int srcCol, int destRow, int destCol) const
 {
     if (!isWithinBounds(srcRow, srcCol) || !isWithinBounds(destRow, destCol))
-        return 14;
+        return OutOfBoundsException().getResponseCode();
 
     Piece* srcPiece = getPiece(srcRow, srcCol);
     if (!srcPiece)
-        return 11;
+        return NoPieceAtSourceException().getResponseCode();
     char srcColor = srcPiece->getColor();
     char srcSymbol = srcPiece->getSymbol();
 
@@ -330,7 +330,7 @@ int Board::getMoveResponseCode(int srcRow, int srcCol, int destRow, int destCol)
                 for (int r = srcRow + rowStep, c = srcCol + colStep; r != destRow || c != destCol; r += rowStep, c += colStep)
                 {
                     if (board[r][c])
-                        return 21;
+                        return IllegalMoveException().getResponseCode();
                 }
             }
             
@@ -341,7 +341,7 @@ int Board::getMoveResponseCode(int srcRow, int srcCol, int destRow, int destCol)
                 char destColor = destPiece->getColor();
 
                 if(srcColor == destColor)
-					return 13;   /// self capture
+					return OwnPieceAtDestinationException().getResponseCode();   /// self capture
 
             }
 
@@ -349,15 +349,17 @@ int Board::getMoveResponseCode(int srcRow, int srcCol, int destRow, int destCol)
             if (srcSymbol == WHITE_PAWN || srcSymbol == BLACK_PAWN)
             {
                 if(destPiece && destCol==srcCol)
-					return 21; /// Pawns cant eat forward
+                    return IllegalMoveException().getResponseCode();
+                ; /// Pawns cant eat forward
                 if (isEnpassant(srcRow, srcCol, destRow, destCol)) /// EnPassant captures
-                    return 45; 
+                    return EnPassantException().getResponseCode(); 
                 if (destCol != srcCol && !destPiece)
-                    return 21; /// Pawns can only move diagonally if capturing
+                    return IllegalMoveException().getResponseCode();
+                /// Pawns can only move diagonally if capturing
 
             }
 
-            return true;
+            return LegalMoveException().getResponseCode();
         }
     }
    
@@ -365,11 +367,11 @@ int Board::getMoveResponseCode(int srcRow, int srcCol, int destRow, int destCol)
     if (srcSymbol == WHITE_KING || srcSymbol == BLACK_KING)
     {
 		if (canCastle(srcSymbol, destRow, destCol))
-			return 43;
+			return CastlingException().getResponseCode();
 	}
  
 
-    return 21;
+    return IllegalMoveException().getResponseCode();
 }
 
 

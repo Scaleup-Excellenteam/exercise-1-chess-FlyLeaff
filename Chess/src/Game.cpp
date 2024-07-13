@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <iostream>
 #include <King.h>
+#include <sstream>
 
 
 Game::Game() : whiteTurn(true)
@@ -176,7 +177,7 @@ bool Game::isMoveLegal(int responseCode) const
  */
 bool Game::doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destCol) const
 {
-    return innerIsCheck(*board.simulateMove(srcRow, srcCol, destRow, destCol), board[srcRow][srcCol]->getColor());
+    return isCheckSimulated(*board.simulateMove(srcRow, srcCol, destRow, destCol), board[srcRow][srcCol]->getColor());
 }
 
 
@@ -209,7 +210,7 @@ std::string Game::lastCastleMove() const
  * 
  * it takes a board as an argument to assist in the simulation of moves
  */
-bool Game::innerIsCheck(Board& tempBoard,char color) const
+bool Game::isCheckSimulated(Board& tempBoard,char color) const
 {
     auto kingPos = (color == WHITE) ? tempBoard.getWhiteKingPos() : tempBoard.getBlackKingPos();
     char opponentColor = (color == WHITE) ? BLACK : WHITE;
@@ -235,6 +236,18 @@ bool Game::innerIsCheck(Board& tempBoard,char color) const
     return false;
 }
 
+std::vector<std::pair<int, int>> Game::getAllPossibleMovesFrom(int srcRow, int srcCol,Board* simBoard) const
+{
+    std::vector<std::pair<int, int>> possibleMoves;
+    for (auto move : (*simBoard)[srcRow][srcCol]->getValidMoves(srcRow, srcCol))
+    {
+		if (isMoveLegal(simBoard->getMoveResponseCode(srcRow, srcCol, move.first, move.second)))
+			possibleMoves.push_back(move);
+	}
+	return possibleMoves;
+	
+}
+
 
 
 
@@ -245,7 +258,7 @@ bool Game::innerIsCheck(Board& tempBoard,char color) const
  */
 bool Game::isCheck(char color) const
 {
-   return innerIsCheck(board, color);
+   return isCheckSimulated(board, color);
 }
 
 /**
@@ -317,6 +330,13 @@ std::pair<std::pair<int, int>, std::pair<int, int>> Game::parseMove(const std::s
 
 
 
+std::string Game::formatMove(int srcRow, int srcCol, int destRow, int destCol) {
+    std::stringstream moveStream;
+    moveStream << static_cast<char>('a' + srcRow) << (srcCol + 1); 
+    moveStream << static_cast<char>('a' + destRow) << (destCol + 1); 
+    return moveStream.str();
+}
+
 bool Game::isCheckmate(char color) const
 {
     if (!isCheck(color)) {
@@ -339,7 +359,7 @@ bool Game::isCheckmate(char color) const
                         simulatedBoard->movePiece(row, col, destRow, destCol);
 
                     // Check if the move removes the check
-                    if (!innerIsCheck(*simulatedBoard, color)) {
+                    if (!isCheckSimulated(*simulatedBoard, color)) {
                         return false; // There is a legal move that removes the check
                     }
                 }

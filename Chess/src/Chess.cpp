@@ -271,6 +271,13 @@ void Chess::doTurn()
 	}
 }
 
+void Chess::showBestMove()
+{
+	std::string bestMove = m_algorithm.recommendBestMove();
+	std::cout << "Recommended move: " << bestMove << "\n\n\n";
+
+}
+
 char Chess::pawnPromotionUI()
 {
 	cout << "Pawn promotion: \n";
@@ -299,8 +306,8 @@ void Chess::handlePromotion(int destRow, int destCol, char piece)
 
 
 // C'tor
-Chess::Chess(const string& start)
-	: m_boardString(start),m_codeResponse(-1)
+Chess::Chess(ChessAlgorithm algo, const string& start)
+	: m_boardString(start),m_codeResponse(-1), m_algorithm(algo)
 {
 	setFrames();
 	setPieces();
@@ -317,6 +324,7 @@ string Chess::getInput()
 		doTurn(); 
 
 	displayBoard();
+	showBestMove();
 	showAskInput();
 
 	cin >> m_input;

@@ -1,0 +1,98 @@
+#include "MoveEvaluator.h"
+#include "Game.h"
+#include "Board.h"
+
+MoveEvaluator::MoveEvaluator(const Game& game, const Board& board) : game(game), board(board) {}
+
+int MoveEvaluator::evalMove(int srcRow, int srcCol, int destRow, int destCol)
+{
+	return evalThreatandPos(srcRow, srcCol, destRow, destCol) + evalTakePiece(destRow, destCol);
+}
+
+
+int MoveEvaluator::evalThreatandPos(int srcRow, int srcCol, int destRow, int destCol) 
+{
+	Board* simulatedBoard = board.simulateMove(srcRow, srcCol, destRow, destCol);
+	int threatValue = 0;
+	int posValue = 0;
+	int boardCenterValue = 0;
+	bool currentPlayerPiece;
+	for (int row = 0; row < 8; row++)
+	{
+		for (int col = 0; col < 8; col++)
+		{
+			if (simulatedBoard->getPiece(row, col))
+			{
+				currentPlayerPiece = simulatedBoard->getPiece(row, col)->getColor() == game.getCurrentPlayerColor();
+				auto possibleMoves = game.getAllPossibleMovesFrom(row, col, simulatedBoard);
+				int srcPiece = evalPieceValues(simulatedBoard->getPiece(row, col)->getSymbol());
+				if(currentPlayerPiece)
+					posValue += possibleMoves.size();
+				else
+					posValue -= possibleMoves.size();
+				for (auto move : possibleMoves)
+				{
+					if(currentPlayerPiece)
+						boardCenterValue += centerControl(move.first, move.second);
+					else
+						boardCenterValue -= centerControl(move.first, move.second);
+					//check if move is a capture
+					if (simulatedBoard->getPiece(move.first, move.second))
+					{
+						//check if move is a capture of a higher value piece
+						int destPiece = evalPieceValues(simulatedBoard->getPiece(move.first, move.second)->getSymbol());
+						if (destPiece > srcPiece)
+						{
+							if(currentPlayerPiece)
+								threatValue += destPiece;
+							else
+								threatValue -= destPiece;
+							
+						}
+						
+					}
+				}
+
+			}
+			
+		}
+	}
+	return threatValue + posValue;
+}
+
+
+int MoveEvaluator::evalPieceValues(char piece)
+{
+	switch (toupper(piece))
+	{
+	case 'P':
+		return 1;
+	case 'N':
+		return 3;
+	case 'B':
+		return 3;
+	case 'R':
+		return 5;
+	case 'Q':
+		return 9;
+	case 'K':
+		return 1000;
+	default:
+		return 0;
+	}
+	
+}
+
+int MoveEvaluator::evalTakePiece(int destRow, int destCol)
+{
+	if(board.getPiece(destRow, destCol))
+		return evalPieceValues(board.getPiece(destRow, destCol)->getSymbol());
+	return 0;
+	
+}
+
+int MoveEvaluator::centerControl(int destRow, int destCol)
+{
+	return (destRow >= 3 && destRow <= 4 && destCol >= 3 && destCol <= 4) ? 1 : 0;
+}
+

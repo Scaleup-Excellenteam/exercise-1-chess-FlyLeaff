@@ -12,7 +12,6 @@ private:
 
     mutable Board board;
     bool whiteTurn;
-    bool innerIsCheck(Board& tempBoard, char color) const;
     void switchTurn();
     bool doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destCol) const;
     bool isWhitePiece(char pieceSymbol) const;
@@ -24,11 +23,14 @@ private:
 
 public:
     Game();
-    void initialize(const std::string& boardString);
+    void initialize(const std::string& boardString = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr");
     int movePiece(int srcRow, int srcCol, int destRow, int destCol);
     bool isGameOver() const;
     int getMoveResponseCode(int srcRow, int srcCol, int destRow, int destCol) const;
     bool isMoveLegal(int responseCode) const;
+    bool isCheckSimulated(Board& tempBoard, char color) const;
+
+    std::vector<std::pair<int,int>> getAllPossibleMovesFrom(int srcRow, int srcCol,Board*) const;
 
     char getOpponentColor() const;
 
@@ -39,8 +41,11 @@ public:
     bool isCheckmate(char color) const;
     char getCurrentPlayerColor() const;
 
+    Board& getBoard() const { return board; }
+
     // Static function to parse chess notation
     static std::pair<std::pair<int, int>, std::pair<int, int>> parseMove(const std::string& move);
+    static std::string formatMove(int srcRow, int srcCol, int destRow, int destCol);
 
 };
 

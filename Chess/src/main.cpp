@@ -2,6 +2,7 @@
 #include "Chess.h"
 #include "Game.h"
 #include <iostream>
+#include "ChessAlgorithm.h"
 
 int main()
 {
@@ -20,11 +21,15 @@ int main()
 
 
 
-    Chess a(board);
     Game game;
     game.initialize(board);
+    ChessAlgorithm chessAlgorithm(game, game.getBoard(), 0);
+    Chess a(chessAlgorithm, board);
+
     int codeResponse = 0;
     bool gameOver = false;
+
+
 
     std::string res = a.getInput();
     while (res != "exit")
@@ -104,6 +109,8 @@ int main()
         }
 
         a.setCodeResponse(codeResponse);
+
+
         res = a.getInput();
         if(gameOver)
 			break;
