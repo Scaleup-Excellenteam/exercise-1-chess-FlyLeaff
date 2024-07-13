@@ -23,7 +23,7 @@ int main()
 
     Game game;
     game.initialize();
-    ChessAlgorithm chessAlgorithm(game, game.getBoard(),3);
+    ChessAlgorithm chessAlgorithm(game,2);
     Chess a(chessAlgorithm);
 
     int codeResponse = 0;
