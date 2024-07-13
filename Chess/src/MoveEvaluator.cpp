@@ -2,17 +2,18 @@
 #include "Game.h"
 #include "Board.h"
 
-MoveEvaluator::MoveEvaluator(const Game& game, const Board& board) : game(game), board(board) {}
+MoveEvaluator::MoveEvaluator(const Game& game, const Board& board, int depth) : game(game), board(board) , depth(depth) {}
 
-int MoveEvaluator::evalMove(int srcRow, int srcCol, int destRow, int destCol)
+int MoveEvaluator::evalMove(int srcRow, int srcCol, int destRow, int destCol,char player)
 {
-	return evalThreatandPos(srcRow, srcCol, destRow, destCol) + evalTakePiece(destRow, destCol);
+	auto simulatedBoard = board.simulateMove(srcRow, srcCol, destRow, destCol);
+return evalThreatandPos(srcRow, srcCol, destRow, destCol,player,simulatedBoard) + evalTakePiece(destRow, destCol);
 }
 
 
-int MoveEvaluator::evalThreatandPos(int srcRow, int srcCol, int destRow, int destCol) 
+int MoveEvaluator::evalThreatandPos(int srcRow, int srcCol, int destRow, int destCol,char player, Board* simulatedBoard) 
 {
-	Board* simulatedBoard = board.simulateMove(srcRow, srcCol, destRow, destCol);
+	
 	int threatValue = 0;
 	int posValue = 0;
 	int boardCenterValue = 0;
@@ -23,7 +24,7 @@ int MoveEvaluator::evalThreatandPos(int srcRow, int srcCol, int destRow, int des
 		{
 			if (simulatedBoard->getPiece(row, col))
 			{
-				currentPlayerPiece = simulatedBoard->getPiece(row, col)->getColor() == game.getCurrentPlayerColor();
+				currentPlayerPiece = simulatedBoard->getPiece(row, col)->getColor() == player;
 				auto possibleMoves = game.getAllPossibleMovesFrom(row, col, simulatedBoard);
 				int srcPiece = evalPieceValues(simulatedBoard->getPiece(row, col)->getSymbol());
 				if(currentPlayerPiece)
@@ -57,7 +58,7 @@ int MoveEvaluator::evalThreatandPos(int srcRow, int srcCol, int destRow, int des
 			
 		}
 	}
-	return threatValue + posValue;
+	return threatValue + posValue + boardCenterValue;
 }
 
 
@@ -93,6 +94,6 @@ int MoveEvaluator::evalTakePiece(int destRow, int destCol)
 
 int MoveEvaluator::centerControl(int destRow, int destCol)
 {
-	return (destRow >= 3 && destRow <= 4 && destCol >= 3 && destCol <= 4) ? 1 : 0;
+	return (destRow >= 3 && destRow <= 4 && destCol >= 3 && destCol <= 4) ? 3 : 0;
 }
 

@@ -9,7 +9,7 @@
 
 class ChessAlgorithm {
 public:
-    ChessAlgorithm(const Game& game, const Board& board, int depth);
+    ChessAlgorithm(const Game& game, const Board& board, int depth=1);
     std::string recommendBestMove();
 
 private:

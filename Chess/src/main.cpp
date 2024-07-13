@@ -6,7 +6,7 @@
 
 int main()
 {
-    string board = "R##PK##RPPPPPPPP###################P############Rppppppp####k###"; 
+   // string board = "R##PK##RPPPPPPPP###################P############Rppppppp####k###"; 
     //std::string board = "########R###K##############################r###k########"
 
     //std::string board = std::string( // for testing purposes
@@ -22,9 +22,9 @@ int main()
 
 
     Game game;
-    game.initialize(board);
-    ChessAlgorithm chessAlgorithm(game, game.getBoard(), 0);
-    Chess a(chessAlgorithm, board);
+    game.initialize();
+    ChessAlgorithm chessAlgorithm(game, game.getBoard(),3);
+    Chess a(chessAlgorithm);
 
     int codeResponse = 0;
     bool gameOver = false;

@@ -4,7 +4,7 @@
 #include "Movecomparator.h"
 
 ChessAlgorithm::ChessAlgorithm(const Game& game, const Board& board, int depth)
-    : game(game), board(board), evaluator(game, board), depth(depth) {}
+    : game(game), board(board), evaluator(game, board,depth), depth(depth) {}
 
 std::string ChessAlgorithm::recommendBestMove() {
     PriorityQueue<std::pair<int, std::string>, MoveComparator> pq;
@@ -18,12 +18,12 @@ std::string ChessAlgorithm::recommendBestMove() {
 				for (auto move : moves)
 				{
 					std::string moveStr = Game::formatMove(row, col, move.first, move.second);
-					int moveValue = evaluator.evalMove(row, col, move.first, move.second);
+					int moveValue = evaluator.evalMove(row, col, move.first, move.second,game.getCurrentPlayerColor());
 					pq.push({ moveValue, moveStr });
 				}
 			}
 				
 		}
 
-    return "asd";
+    return pq.pull().second;
 }

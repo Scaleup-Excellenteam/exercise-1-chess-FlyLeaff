@@ -11,7 +11,7 @@ public:
     PriorityQueue();
 
     void push(const T& value);
-    T poll();
+    T pull();
 
     bool isEmpty() const;
 
@@ -36,7 +36,7 @@ void PriorityQueue<T, Comparator>::push(const T& value) {
 }
 
 template<typename T, typename Comparator>
-T PriorityQueue<T, Comparator>::poll() {
+T PriorityQueue<T, Comparator>::pull() {
     if (isEmpty()) {
         throw std::out_of_range("PriorityQueue is empty");
     }
