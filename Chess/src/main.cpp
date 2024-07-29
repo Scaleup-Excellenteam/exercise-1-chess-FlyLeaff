@@ -6,7 +6,7 @@
 
 int main()
 {
-   // string board = "R##PK##RPPPPPPPP###################P############Rppppppp####k###"; 
+    string board = "R###K##RPPPPPPPP###################P############Rpppppppr###k##r"; 
     //std::string board = "########R###K##############################r###k########"
 
     //std::string board = std::string( // for testing purposes

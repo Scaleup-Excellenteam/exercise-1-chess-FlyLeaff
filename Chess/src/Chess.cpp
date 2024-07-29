@@ -156,15 +156,27 @@ void Chess::excute()
 
 void Chess::executeCastling()
 {
-	int row = (m_input[0] - 'a');
-	int col = (m_input[1] - '1');
-	char pieceInSource = m_boardString[(row * 8) + col];
-	m_boardString[(row * 8) + col] = '#';
+	int srcRow = (m_input[0] - 'a');
+	int srcCol = (m_input[1] - '1');
+	bool isKingSide = (m_input[3] == '8');
+	bool isWhite = (m_boardString[(srcRow * 8) + srcCol] == 'K');
+	char pieceInSource = m_boardString[(srcRow * 8) + srcCol];
+	m_boardString[(srcRow * 8) + srcCol] = '#';
 
-	row = (m_input[2] - 'a');
-	col = (m_input[3] - '1');
-	m_boardString[(row * 8) + col] = pieceInSource;
+	int desRow = (m_input[2] - 'a');
+	int desCol = (m_input[3] - '1');
+	m_boardString[(desRow * 8) + desCol] = pieceInSource;
 
+	if(isKingSide)
+		if(isWhite)
+			m_boardString[(srcRow * 8) + 2] = 'R';
+		else
+			m_boardString[(srcRow * 8) + 2] = 'r';
+	else
+		if(isWhite)
+			m_boardString[(srcRow * 8) + 5] = 'R';
+		else
+			m_boardString[(srcRow * 8) + 5] = 'r';
 	setPieces();
 
 }
