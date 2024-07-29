@@ -1,0 +1,52 @@
+#pragma once
+
+#ifndef GAME_H
+#define GAME_H
+
+#include "Board.h"
+#include "ChessExceptions.h"
+
+class Game
+{
+private:
+
+    mutable Board board;
+    bool whiteTurn;
+    void switchTurn();
+    bool doesMoveCauseSelfCheck(int srcRow, int srcCol, int destRow, int destCol) const;
+    bool isWhitePiece(char pieceSymbol) const;
+
+    bool isWhiteTurn() const { return whiteTurn; }
+ 
+    bool didWhiteCastleLastTurn;
+    bool didBlackCastleLastTurn;
+
+public:
+    Game();
+    void initialize(const std::string& boardString = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr");
+    int movePiece(int srcRow, int srcCol, int destRow, int destCol);
+    bool isGameOver() const;
+    int getMoveResponseCode(int srcRow, int srcCol, int destRow, int destCol) const;
+    bool isMoveLegal(int responseCode) const;
+    bool isCheckSimulated(Board& tempBoard, char color) const;
+
+    std::vector<std::pair<int,int>> getAllPossibleMovesFrom(int srcRow, int srcCol,Board*) const;
+
+    char getOpponentColor() const;
+
+    void promotePawn(int row, int col, char piece);
+    std::string lastCastleMove() const;
+
+    bool isCheck(char color) const;
+    bool isCheckmate(char color) const;
+    char getCurrentPlayerColor() const;
+
+    Board& getBoard() const { return board; }
+
+    // Static function to parse chess notation
+    static std::pair<std::pair<int, int>, std::pair<int, int>> parseMove(const std::string& move);
+    static std::string formatMove(int srcRow, int srcCol, int destRow, int destCol);
+
+};
+
+#endif // GAME_H

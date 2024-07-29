@@ -2,6 +2,7 @@
 #include <iostream>
 #include <Windows.h>
 #include <string>
+#include "ChessAlgorithm.h"
 
 using std::cout;
 using std::cin; 
@@ -18,6 +19,8 @@ class Chess {
 	string m_msg = "\n";
 	string m_errorMsg = "\n";
 	int m_codeResponse;
+	char m_promotionPiece;
+	ChessAlgorithm m_algorithm;
 
 	void clear() const;
 	void setFrames();
@@ -29,12 +32,19 @@ class Chess {
 	bool isValid() const;
 	bool isExit() const;
 	void excute();
+	void executeCastling();
+	void executeEnPassant();
 	void doTurn();
+	void showBestMove();
 
 public:
-	Chess(const string& start = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr");
+	Chess(ChessAlgorithm algo, const string& start = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr");
 	Chess(const Chess&)=delete;
 	Chess& operator=(const Chess&) = delete;
 	string getInput();
 	void setCodeResponse(int codeResponse);
+	char pawnPromotionUI();
+	void handlePromotion(int destRow, int destCol, char piece);
+
+
 };

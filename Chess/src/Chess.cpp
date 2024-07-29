@@ -153,56 +153,173 @@ void Chess::excute()
 	setPieces(); 
 }
 // check the response code and switch turn if needed 
+
+void Chess::executeCastling()
+{
+	int srcRow = (m_input[0] - 'a');
+	int srcCol = (m_input[1] - '1');
+	bool isKingSide = (m_input[3] == '8');
+	bool isWhite = (m_boardString[(srcRow * 8) + srcCol] == 'K');
+	char pieceInSource = m_boardString[(srcRow * 8) + srcCol];
+	m_boardString[(srcRow * 8) + srcCol] = '#';
+
+	int desRow = (m_input[2] - 'a');
+	int desCol = (m_input[3] - '1');
+	m_boardString[(desRow * 8) + desCol] = pieceInSource;
+
+	if(isKingSide)
+		if(isWhite)
+			m_boardString[(srcRow * 8) + 2] = 'R';
+		else
+			m_boardString[(srcRow * 8) + 2] = 'r';
+	else
+		if(isWhite)
+			m_boardString[(srcRow * 8) + 5] = 'R';
+		else
+			m_boardString[(srcRow * 8) + 5] = 'r';
+	setPieces();
+
+}
+void Chess::executeEnPassant()
+{
+	int srcRow = (m_input[0] - 'a');
+	int srcCol = (m_input[1] - '1');
+	int dstRow = (m_input[2] - 'a');
+	int dstCol = (m_input[3] - '1');
+
+	// Move the pawn
+	char pieceInSource = m_boardString[(srcRow * 8) + srcCol];
+	m_boardString[(srcRow * 8) + srcCol] = '#';
+	m_boardString[(dstRow * 8) + dstCol] = pieceInSource;
+
+	int capturedRow = srcRow;
+	int capturedCol = dstCol;
+
+	m_boardString[(capturedRow * 8) + capturedCol] = '#';
+
+	setPieces();
+}
+
+
 void Chess::doTurn()
 {
-	m_errorMsg = "\n"; 
+	m_errorMsg = "\n";
 	switch (m_codeResponse)
 	{
-	case 11:
-	{
-		m_msg = "there is not piece at the source \n";
-		break;
-	}
-	case 12:
-	{
-		m_msg = "the piece in the source is piece of your opponent \n";
-		break;
-	}
-	case 13:
-	{
-		m_msg = "there one of your pieces at the destination \n";
-		break;
-	}
-	case 21:
-	{
-		m_msg = "illegal movement of that piece \n";
-		break;
-	}
-	case 31:
-	{
-		m_msg = "this movement will cause you checkmate \n";
-		break;
-	}
-	case 41:
-	{
-		excute();
-		m_turn = !m_turn;
-		m_msg = "the last movement was legal and cause check \n";
-		break;
-	}
-	case 42:
-	{
-		excute();
-		m_turn = !m_turn;
-		m_msg = "the last movement was legal \n";
-		break;
-	}
+		case 11:
+		{
+			m_msg = "there is not piece at the source \n";
+			break;
+		}
+		case 12:
+		{
+			m_msg = "the piece in the source is piece of your opponent \n";
+			break;
+		}
+		case 13:
+		{
+			m_msg = "there one of your pieces at the destination \n";
+			break;
+		}
+		case 21:
+		{
+			m_msg = "illegal movement of that piece \n";
+			break;
+		}
+		case 31:
+		{
+			m_msg = "this movement will cause you checkmate \n";
+			break;
+		}
+		case 41:
+		{
+			excute();
+			m_turn = !m_turn;
+			m_msg = "the last movement was legal and cause check \n";
+			break;
+		}
+		case 42:
+		{
+			excute();
+			m_turn = !m_turn;
+			m_msg = "the last movement was legal \n";
+			break;
+		}
+		case 43:
+		{
+			executeCastling();
+			m_turn = !m_turn;
+			m_msg = "the last movement was legal - Castling \n";
+			break;
+
+		}
+		case 1:
+		{ //TODO checkmate
+			string whoWon = (m_turn) ?  "Player 1 (White - Capital letters) won" : "Player 2 (Black - Small letters) won" ;
+			m_msg = "Checkmate! Game Over! \n" + whoWon + "\n\nPress any input to exit!";
+			excute();
+			setPieces();
+			displayBoard();
+			std::string temp;
+			cin >> temp;
+			exit(0);
+			break;
+		}
+		case 45: 
+		{
+			executeEnPassant();
+			m_turn = !m_turn;
+			break;
+		}
+		case 46:
+		{
+
+			handlePromotion((m_input[2] - 'a'), (m_input[3] - '1'), m_promotionPiece);
+			m_turn = !m_turn;
+			m_msg = "the last movement was legal - Pawn promotion \n";
+			// pawn promotion
+			break;
+		}
 	}
 }
 
+void Chess::showBestMove()
+{
+	std::string bestMove = m_algorithm.recommendBestMove();
+	std::cout << "Recommended move: " << bestMove << "\n\n\n";
+
+}
+
+char Chess::pawnPromotionUI()
+{
+	cout << "Pawn promotion: \n";
+	cout << "Please enter the piece you want to promote to: \n";
+	cout << "Q - Queen\n";
+	cout << "R - Rook\n";
+	cout << "B - Bishop\n";
+	cout << "N - Knight\n";
+	cout << "Enter your choice: ";
+
+	char piece;
+	cin >> piece;
+	m_promotionPiece = piece;
+	return piece;
+}
+
+void Chess::handlePromotion(int destRow, int destCol, char piece)
+{
+
+	piece = (m_turn) ? toupper(piece) : tolower(piece);
+	int dir = (m_turn) ? -1 : 1;
+	m_boardString[(destRow+dir)*8 + destCol] = '#';	
+	m_boardString[(destRow * 8) + destCol] = piece;
+	setPieces();
+}
+
+
 // C'tor
-Chess::Chess(const string& start)
-	: m_boardString(start),m_codeResponse(-1)
+Chess::Chess(ChessAlgorithm algo, const string& start)
+	: m_boardString(start),m_codeResponse(-1), m_algorithm(algo)
 {
 	setFrames();
 	setPieces();
@@ -219,6 +336,7 @@ string Chess::getInput()
 		doTurn(); 
 
 	displayBoard();
+	showBestMove();
 	showAskInput();
 
 	cin >> m_input;
@@ -252,6 +370,9 @@ void Chess::setCodeResponse(int codeResponse)
 {
 	if (((11 <= codeResponse) && (codeResponse <= 13)) ||
 		((21 == codeResponse) || (codeResponse == 31)) ||
-		((41 == codeResponse) || (codeResponse == 42)))
+		((41 == codeResponse) || (codeResponse == 42)) ||
+		((codeResponse == 43) || (codeResponse == 44)) ||
+		((codeResponse == 45) || (codeResponse == 46)) ||
+		((codeResponse == 3) || (codeResponse == 1)))
 		m_codeResponse = codeResponse;
 }

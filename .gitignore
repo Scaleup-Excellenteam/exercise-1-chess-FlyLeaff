@@ -1,3 +1,5 @@
 .vs/
 Chess/CMakeSettings.json
 Chess/out/build
+Chess/doxyfile
+Chess/docs/latex/
